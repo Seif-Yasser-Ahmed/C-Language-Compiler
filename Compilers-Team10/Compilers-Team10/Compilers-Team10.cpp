@@ -2,6 +2,7 @@
 #include <regex>
 #include<vector>
 //#include<pair>
+#include "VariadicTable.h"
 using namespace std;
 
 const string keywords[44] = {
@@ -92,7 +93,7 @@ int main()
 		vector<string> ExpoNumbers;
 		vector<string> floatNumbers;
 
-		//vector<pair(string identifier, string value)> symbolTable;
+		//vector<pair(string identifier, string attribute)> symbolTable;
 		//int|float|double|  
 
 
@@ -110,21 +111,21 @@ int main()
 //Numbers
 
 
-		regex delimitersRegex("\\{|\\}|\\(|\\)|;|,|\\[|\\]|,|\\.|:");
+		regex delimitersRegex("\\{|\\}|\\(|\\)|;|,|\\[|\\]|\\.|:");
 		regex arithmeticOpRegex("(\\+|-|\\*|\\/|%|\\+\\+|--)");
 		regex boolenOpRegex("(>=|<=|==|!=|>|<|\\&\&|\\|\\||!|&|\\||\\^|~|<<|>>|\\?|\\.\\s|->|\\*)");
 		regex keywordsRegex("auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default");
 		regex stringLiteralRegex(R"(\".*\")");
-		regex numbersRegex(R"(((\+|-)?0[0-7]*)|(^[-+]?(0|[1-9][0-9]*)))");
-
-
+		regex numbersRegex(R"(((^[-+]?(0|[1-9][0-9]*))))");
+		//regex identifiersRegex(R"(((\+|-)?0[0-7]*)|(^[-+]?(0|[1-9][0-9]*)))");
+		regex hexaNum("(\\+|-)?0(x|X)[0-9a-fA-F]+");
+		regex octalNum("(\\+|-)?0[0-7]*");
 		/*regex myRegex("\".*\"|([a-zA-Z_][a-zA-Z0-9_]*)|\\(|\\)|\\{|\\}|;|[0-9]+|,|=");*/
 		/*regex binaryNum("(\\+|-)?0(b|B)[0-1]+");
-		regex hexaNum("(\\+|-)?0(x|X)[0-9a-fA-F]+");
+		
 		regex ExpoNum("((\\+-)*\\+?|(-\\+)*-?)(0|[1-9][0-9]*)((e|E)(\\+|-)?[0-9]+)");
 		regex decimalNum("(\\+|-)?(0|[1-9][0-9]*)");
 		regex floatNum("^[-+]?[0-9]*\\.?[0-9]+$");
-		regex octalNum("(\\+|-)?0[0-7]*");
 		*/
 		//smatch matches;
 		//if (regex_match(input, delimitersRegex))
@@ -145,24 +146,45 @@ int main()
 
 
 		for (auto line : linesofcode)
+
 		{
-			sregex_iterator myRegexIterator(line.begin(), line.end(), numbersRegex);
+			string temp = "";
+			sregex_iterator hexIterator(line.begin(), line.end(), hexaNum);
 			sregex_iterator end1;
 
-			/*sregex_iterator octalIterator(line.begin(), line.end(), octalNum);
-			sregex_iterator end2;*/
+			sregex_iterator numberIterator(line.begin(), line.end(), numbersRegex);
+			sregex_iterator end2;
+			sregex_iterator octralIterator(line.begin(), line.end(), octalNum);
+			sregex_iterator end3;
 
 
-			/*while (octalIterator != end2)
+			while (hexIterator != end1)
 			{
-				cout << "< " << octalIterator->str() << " , Octal Numbers >" << endl;
-				octalIterator++;
-			}*/
-
-			while (myRegexIterator != end1)
+				cout << "< " << hexIterator->str() << " , hexNumbers >" << endl;
+				hexIterator++;
+			}
+			while (numberIterator != end2)
 			{
-				cout << "< " << myRegexIterator->str() << " , Numbers >" << endl;
-				myRegexIterator++;
+				temp = numberIterator->str();
+				string prefix = numberIterator->prefix();
+				cout << prefix << "     " << temp[0] << endl;
+				if (temp[0] != '0' && prefix != "x") {
+					cout << "< " << numberIterator->str() << " ,Numbers >" << endl;
+
+				}
+				numberIterator++;
+			}
+
+			while (octralIterator != end3)
+			{
+				temp = octralIterator->str();
+				string prefix = octralIterator->prefix();
+				cout << prefix << "     " << temp[0] << endl;
+				if (temp[0] != '0' && prefix != "x") {
+					cout << "< " << octralIterator->str() << " ,Numbers >" << endl;
+
+				}
+				octralIterator++;
 			}
 
 
@@ -171,4 +193,3 @@ int main()
 
 	}
 }
-
