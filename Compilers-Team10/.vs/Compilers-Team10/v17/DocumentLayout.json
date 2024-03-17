@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{C35146F6-D3F6-4B53-91FB-E4B524F52B87}|Compilers-Team10\\Compilers-Team10.vcxproj|solutionrelative:Compilers-Team10\\Compilers-Team10.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{C35146F6-D3F6-4B53-91FB-E4B524F52B87}|Compilers-Team10\\Compilers-Team10.vcxproj|C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Lexer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{C35146F6-D3F6-4B53-91FB-E4B524F52B87}|Compilers-Team10\\Compilers-Team10.vcxproj|solutionrelative:Compilers-Team10\\Lexer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C35146F6-D3F6-4B53-91FB-E4B524F52B87}|Compilers-Team10\\Compilers-Team10.vcxproj|C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Lexer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{C35146F6-D3F6-4B53-91FB-E4B524F52B87}|Compilers-Team10\\Compilers-Team10.vcxproj|solutionrelative:Compilers-Team10\\Lexer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
@@ -18,11 +22,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Lexer.h",
               "DocumentMoniker": "C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Lexer.h",
               "RelativeDocumentMoniker": "Compilers-Team10\\Lexer.h",
@@ -30,8 +38,7 @@
               "RelativeToolTip": "Compilers-Team10\\Lexer.h",
               "ViewState": "AQIAAA8AAAAAAAAAAAAAABwAAAADAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-03-16T11:46:48.408Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-03-16T11:46:48.408Z"
             },
             {
               "$type": "Document",
@@ -39,16 +46,24 @@
               "Title": "Compilers-Team10.cpp",
               "DocumentMoniker": "C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Compilers-Team10.cpp",
               "RelativeDocumentMoniker": "Compilers-Team10\\Compilers-Team10.cpp",
-              "ToolTip": "C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Compilers-Team10.cpp",
-              "RelativeToolTip": "Compilers-Team10\\Compilers-Team10.cpp",
-              "ViewState": "AQIAAHsAAAAAAAAAAAAAAAQAAAAAAAAA",
+              "ToolTip": "C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Compilers-Team10.cpp*",
+              "RelativeToolTip": "Compilers-Team10\\Compilers-Team10.cpp*",
+              "ViewState": "AQIAAJQAAAAAAAAAAAAAAKQAAAAxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-03-15T12:28:51.619Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Lexer.cpp",
+              "DocumentMoniker": "C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Lexer.cpp",
+              "RelativeDocumentMoniker": "Compilers-Team10\\Lexer.cpp",
+              "ToolTip": "C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Compilers-Team10\\Compilers-Team10\\Lexer.cpp",
+              "RelativeToolTip": "Compilers-Team10\\Lexer.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-03-16T22:35:18.814Z"
             }
           ]
         }
