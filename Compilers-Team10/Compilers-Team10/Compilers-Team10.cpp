@@ -1,102 +1,18 @@
 #include <iostream>
 #include <regex>
-#include<vector>
-//#include<pair>
+#include <vector>
+#include <utility>
 #include "VariadicTable.h"
 using namespace std;
 
-const string keywords[44] = {
-"auto","static","const",
-"_Alignas","sizeof","break",
-"inline","while","_Alignof",
-"_Generic","case","long",
-"for","_Atomic","_Imaginary",
-"char","short","if",
-"_Bool","_Noreturn","int",
-"struct","do","typedef",
-"_Complex","float","union",
-"return","else","_Static_assert",
-"double","enum","extern",
-"void","_Thread_local",
-"signed","unsigned","register",
-"switch","volatile","continue",
-"goto","restrict","default"
-};
 
-const string STDfunctions[11] = {
-	"printf","scanf","strlen",
-	"strcpy","strcmp","strcat",
-	"malloc","free","fgets",
-	"fprintf","toupper"
-};
-
-const string Delimiters[19]{
-	 ",",
-	 ";",
-	 "(",
-	 ")",
-	 "[",
-	 "]",
-	 "{",
-	 "#",
-	 "?"
-};
-
-const string Operators[9]
-{
-	 "+" ,
-	 "-" ,
-	 "*" ,
-	 "/" ,
-	 ">" ,
-	 "<" ,
-	 "=" ,
-	 "+",
-	 "--"
-};
-
-
-const string BooleanOperator[16]
-{
-			 "==",
-			 "!=",
-			 ">",
-			 "<",
-			 "<=",
-			 ">=",
-			 "&&",
-			 "||",
-			 "!",
-			 "~",
-			 "?:",
-			 "&",
-			 "|",
-			 "^",
-			 "<<",
-			 ">>"
-};
-
-int main()
-{
-
-	string input;
-	while (true)
-	{
-		getline(cin, input);
-		/*cin >> input;
-		cin >> ws;*/
-		vector<string> linesofcode;
-		vector<string> binaryNumbers;
-		vector<string> decimalNumbers;
-		vector<string> octalNumbers;
-		vector<string> hexaNumbers;
-		vector<string> ExpoNumbers;
-		vector<string> floatNumbers;
-
-		//vector<pair(string identifier, string attribute)> symbolTable;
-		//int|float|double|  
-
-
+/*
+Notes :
+- Differentaite between add operator and posotive sign , same with negative
+- Identifiers Regex
+- Symbol Table
+- Exponential
+*/
 
 //Delimimters
 //  
@@ -111,84 +27,171 @@ int main()
 //Numbers
 
 
-		regex delimitersRegex("\\{|\\}|\\(|\\)|;|,|\\[|\\]|\\.|:");
-		regex arithmeticOpRegex("(\\+|-|\\*|\\/|%|\\+\\+|--)");
-		regex boolenOpRegex("(>=|<=|==|!=|>|<|\\&\&|\\|\\||!|&|\\||\\^|~|<<|>>|\\?|\\.\\s|->|\\*)");
-		regex keywordsRegex("auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default");
-		regex stringLiteralRegex(R"(\".*\")");
-		regex numbersRegex(R"(((^[-+]?(0|[1-9][0-9]*))))");
-		//regex identifiersRegex(R"(((\+|-)?0[0-7]*)|(^[-+]?(0|[1-9][0-9]*)))");
-		regex hexaNum("(\\+|-)?0(x|X)[0-9a-fA-F]+");
-		regex octalNum("(\\+|-)?0[0-7]*");
-		/*regex myRegex("\".*\"|([a-zA-Z_][a-zA-Z0-9_]*)|\\(|\\)|\\{|\\}|;|[0-9]+|,|=");*/
-		/*regex binaryNum("(\\+|-)?0(b|B)[0-1]+");
-		
-		regex ExpoNum("((\\+-)*\\+?|(-\\+)*-?)(0|[1-9][0-9]*)((e|E)(\\+|-)?[0-9]+)");
-		regex decimalNum("(\\+|-)?(0|[1-9][0-9]*)");
-		regex floatNum("^[-+]?[0-9]*\\.?[0-9]+$");
-		*/
-		//smatch matches;
-		//if (regex_match(input, delimitersRegex))
-		//	cout<< 
+int main()
+{
+	string input, temp;
+	vector<pair<string, string>> symbolTable;
+	smatch match;
+	auto start = input.cbegin();
+
+
+	regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)");
+	regex arithmeticOpRegex(R"((\+|-|\*|\/|%|\+\+|--))");
+	regex booleanOpRegex(R"((>=|<=|==|!=|>|<|\&\&|\|\||!|\&|\||\^|~|<<|>>|\?|\.\s|->|\*))");
+	regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)\b)");
+	regex stringLiteralRegex(R"(\".*\")");
+	regex numbersRegex(R"((\+|-)?(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*))");
+	regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
 
 
 
 
+	while (true)
+	{
+		cout << "Enter a line of code: ";
+		getline(cin, input);
 
-		linesofcode.push_back(input);
-		/*binaryNumbers.push_back(input);
-		decimalNumbers.push_back(input);
-		octalNumbers.push_back(input);
-		hexaNumbers.push_back(input);
-		ExpoNumbers.push_back(input);
-		floatNumbers.push_back(input);*/
-
-
-
-		for (auto line : linesofcode)
-
+		if (input.empty() || regex_match(input, regex("^\\s*(//.*)?$")))
 		{
-			string temp = "";
-			sregex_iterator hexIterator(line.begin(), line.end(), hexaNum);
-			sregex_iterator end1;
-
-			sregex_iterator numberIterator(line.begin(), line.end(), numbersRegex);
-			sregex_iterator end2;
-			sregex_iterator octralIterator(line.begin(), line.end(), octalNum);
-			sregex_iterator end3;
-
-
-			while (hexIterator != end1)
-			{
-				cout << "< " << hexIterator->str() << " , hexNumbers >" << endl;
-				hexIterator++;
-			}
-			while (numberIterator != end2)
-			{
-				temp = numberIterator->str();
-				string prefix = numberIterator->prefix();
-				cout << prefix << "     " << temp[0] << endl;
-				if (temp[0] != '0' && prefix != "x") {
-					cout << "< " << numberIterator->str() << " ,Numbers >" << endl;
-
-				}
-				numberIterator++;
-			}
-
-			while (octralIterator != end3)
-			{
-				temp = octralIterator->str();
-				string prefix = octralIterator->prefix();
-				cout << prefix << "     " << temp[0] << endl;
-				if (temp[0] != '0' && prefix != "x") {
-					cout << "< " << octralIterator->str() << " ,Numbers >" << endl;
-
-				}
-				octralIterator++;
-			}
-
-
+			continue;
 		}
+
+		start = input.cbegin();
+		while (regex_search(start, input.cend(), match, delimitersRegex))
+		{
+			cout << "<  " << match.str(0) << " , Delimiter >" << endl;
+			start = match[0].second;
+		}
+
+		start = input.cbegin();
+		while (regex_search(start, input.cend(), match, booleanOpRegex))
+		{
+			cout << "<  " << match.str(0) << " , Boolean Operator >" << endl;
+			start = match[0].second;
+		}
+
+
+		start = input.cbegin();
+		while (regex_search(start, input.cend(), match, arithmeticOpRegex))
+		{
+			cout << "<  " << match.str(0) << " , Arithmetic Operator >" << endl;
+			start = match[0].second;
+		}
+
+		start = input.cbegin();
+		while (regex_search(start, input.cend(), match, keywordsRegex))
+		{
+			cout << "<  " << match.str(0) << " , Keyword >" << endl;
+			start = match[0].second;
+		}
+
+		start = input.cbegin();
+		while (regex_search(start, input.cend(), match, IdRegex))
+		{
+			if (!regex_match(match.str(0), keywordsRegex) && !regex_match(match.str(0), numbersRegex))
+			{
+				cout << "<  " << match.str(0) << " , Identifier >" << endl;
+			}
+			start = match[0].second;
+		}
+
+
+
+		start = input.cbegin();
+		while (regex_search(start, input.cend(), match, numbersRegex))
+		{
+			cout << "< " << match.str(0) << " , Number >" << endl;
+			start = match[0].second;
+		}
+
+		//start = input.cbegin();
+		//while (regex_search(start, input.cend(), match, binaryNumRegex))
+		//{
+		//	if (match.str(0) != "0")
+		//	{
+		//		cout << "Match found: " << match.str(0) << " Binary Number" << endl;
+		//	}
+		//	start = match[0].second;
+		//}
+
+		//start = input.cbegin();
+		//while (regex_search(start, input.cend(), match, hexNumRegex))
+		//{
+		//	if (match.str(0) != "0")
+		//	{
+		//		cout << "Match found: " << match.str(0) << " Hex Number" << endl;
+		//	}
+		//	start = match[0].second;
+		//}
+
+		//start = input.cbegin();
+		//while (regex_search(start, input.cend(), match, decNumRegex))
+		//{
+		//	if (match.str(0) != "0")
+		//	{
+		//		cout << "Match found: " << match.str(0) << " Dec Number" << endl;
+		//	}
+		//	start = match[0].second;
+		//}
+
+
+
+
+		//sregex_iterator delimiterIterator(input.begin(), input.end(), delimitersRegex);
+		//sregex_iterator end1;
+
+		//sregex_iterator arithmeticOpIterator(input.begin(), input.end(), arithmeticOpRegex);
+		//sregex_iterator end2;
+
+		//sregex_iterator boolaenOpIterator(input.begin(), input.end(), boolenOpRegex);
+		//sregex_iterator end3;
+
+		//sregex_iterator keywordsIterator(input.begin(), input.end(), keywordsRegex);
+		//sregex_iterator end4;
+
+		//sregex_iterator stringIterator(input.begin(), input.end(), stringLiteralRegex);
+		//sregex_iterator end5;
+
+		//sregex_iterator numbersIterator(input.begin(), input.end(), numbersRegex);
+		//sregex_iterator end6;
+
+
+
+		//while (delimiterIterator != end1)
+		//{
+		//	cout << "< " << delimiterIterator->str() << " , Delimiter > " << endl;
+		//	delimiterIterator++;
+		//}
+
+		//while (arithmeticOpIterator != end2)
+		//{
+		//	cout << "< " << arithmeticOpIterator->str() << " , Operator > " << endl;
+		//	arithmeticOpIterator++;
+		//}
+
+		//while (boolaenOpIterator != end3)
+		//{
+		//	cout << "< " << boolaenOpIterator->str() << " , Operator > " << endl;
+		//	boolaenOpIterator++;
+		//}
+
+		//while (keywordsIterator != end4)
+		//{
+		//	cout << "< " << keywordsIterator->str() << " , Keyword > " << endl;
+		//	keywordsIterator++;
+		//}
+
+		//while (stringIterator != end5)
+		//{
+		//	cout << "< " << stringIterator->str() << " , String Literal > " << endl;
+		//	stringIterator++;
+		//}
+
+		//while (numbersIterator != end6)
+		//{
+		//	cout << "< " << numbersIterator->str() << " , Number > " << endl;
+		//	numbersIterator++;
+		//}
 
 
 	}
