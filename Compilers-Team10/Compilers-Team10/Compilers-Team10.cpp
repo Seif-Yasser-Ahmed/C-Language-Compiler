@@ -2,6 +2,8 @@
 #include <regex>
 #include <vector>
 #include <utility>
+#include<algorithm>
+#include<algorithm>
 #include "VariadicTable.h"
 using namespace std;
 
@@ -30,20 +32,24 @@ Notes :
 int main()
 {
 	string input, temp;
-	vector<pair<string, string>> symbolTable;
+	vector<string> symbolTable;
+
+	VariadicTable<string> vt({ "Identifier" });
+
+
+
 	smatch match;
 	auto start = input.cbegin();
 
 
+
 	regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)");
-	regex arithmeticOpRegex(R"((\+|-|\*|\/|%|\+\+|--))");
+	regex arithmeticOpRegex(R"((\+|-|\*|\/|%|\+\+|--|=))");
 	regex booleanOpRegex(R"((>=|<=|==|!=|>|<|\&\&|\|\||!|\&|\||\^|~|<<|>>|\?|\.\s|->|\*))");
 	regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)\b)");
 	regex stringLiteralRegex(R"(\".*\")");
 	regex numbersRegex(R"((\+|-)?(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*))");
 	regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
-
-
 
 
 	while (true)
@@ -91,11 +97,10 @@ int main()
 			if (!regex_match(match.str(0), keywordsRegex) && !regex_match(match.str(0), numbersRegex))
 			{
 				cout << "<  " << match.str(0) << " , Identifier >" << endl;
+				symbolTable.push_back(match.str(0));
 			}
 			start = match[0].second;
 		}
-
-
 
 		start = input.cbegin();
 		while (regex_search(start, input.cend(), match, numbersRegex))
@@ -103,8 +108,23 @@ int main()
 			cout << "< " << match.str(0) << " , Number >" << endl;
 			start = match[0].second;
 		}
+		if (input == "return")
+			break;
 
-		//start = input.cbegin();
+	}
+	vt.addRow(" ");
+	sort(symbolTable.begin(), symbolTable.end());
+	auto it = unique(symbolTable.begin(), symbolTable.end());
+	symbolTable.erase(it, symbolTable.end());
+	for (int i = 0; i < symbolTable.size(); i++)
+		vt.addRow(symbolTable[0]);
+	vt.print(std::cout);
+
+}
+
+
+
+//start = input.cbegin();
 		//while (regex_search(start, input.cend(), match, binaryNumRegex))
 		//{
 		//	if (match.str(0) != "0")
@@ -133,8 +153,6 @@ int main()
 		//	}
 		//	start = match[0].second;
 		//}
-
-
 
 
 		//sregex_iterator delimiterIterator(input.begin(), input.end(), delimitersRegex);
@@ -192,7 +210,3 @@ int main()
 		//	cout << "< " << numbersIterator->str() << " , Number > " << endl;
 		//	numbersIterator++;
 		//}
-
-
-	}
-}
