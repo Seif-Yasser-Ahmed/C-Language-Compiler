@@ -1,246 +1,235 @@
 #include <iostream>
 #include <regex>
 #include <vector>
+#include <sstream>
 #include "VariadicTable.h"
 using namespace std;
-
-
-/*
-Notes :
-- Differentaite between add operator and posotive sign , same with negative
-- Identifiers Regex
-- Symbol Table
-- Exponential
-*/
-
-//Delimimters
-//  
-//Boolean Operators
-//
-//Arithmetic    
-//
-//Keywords
-//
-//Identifiers
-//
-//Numbers
-
-//-------is integer function
-bool isInt(string str) {
-
-	int i = 0;
-	while (isdigit(str[i])) {
-		i++;
-	}
-	return str[i] == '\0';
-}
-//-------is float function
-bool isFloat(string str) {
-
-	int i = 0;
-	int dots = 0;
-	while (isdigit(str[i]) || str[i] == '.') {
-		if (str[i] == '.') dots++;
-		if (dots > 1) return false;
-		i++;
-	}
-	return str[i] == '\0';
-}
 int main()
 {
-	string input, temp;
-	vector<string> symbolTable;
-	//vector<string> tokenTable;
-	vector<pair<string, string>>tokenTable;
-	//map<string, int> mp;
+    int tokensSize = 0;
+    string input;
+    string delimiter = " ";
+    string token;
+    vector<string> symbolTable;
+    vector<string> linesofcode;
+    vector<pair<string, string>> tokenTable;
+    smatch match;
+    VariadicTable<string> symbolT({ "Identifiers" });
+    bool boolOp = false;
 
+    //---------------------------------------------------------------------------------------
+    regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)");
+    regex arithmeticOpRegex(R"((\+\+|--|\*|\/|%|\+|-|=))");
+    regex booleanOpRegex(R"((>=|<=|==|!=|>>|<<|\&\&|\|\||!|\&|\||\^|~|<|>|\?|\.\s|->))");
+    regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)\b)");
+    regex stringLiteralRegex(R"(\".*\")");
+    regex numbersRegex(R"(((-\+)*-?(0|[1-9][0-9]*)?(\.)?([1-9][0-9]*)(((e|E)(\+|-)?[0-9]+)?)|(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)))");
+    regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
+    regex commentRegex(R"(\/\/.*|\/\*.*\*\/)");
+    /*-----------------------------------------------------------------------------------------*/
+    cout << "Type \"quit\" to close the program and print the symbol table" << endl;
+    while (true)
+    {
+        cout << "Enter a line of code: ";
+        getline(cin, input);
+        string str = input;
+        istringstream iss(str);
 
-	VariadicTable<string> symbolT({ "Identifiers" });
-	VariadicTable<string, string, string> tokenT({ "Tokens","description","lexeme" });
+        /*----------------Tokenization-------------------*/
+        do
+        {
+            string subs;
+            iss >> subs;
+            linesofcode.push_back(subs);
+            // cout << subs << endl;
+        } while (iss);
 
+        /*-----------------------------------------------*/
+        tokensSize = linesofcode.size();
+        boolOp = false;
 
-	smatch match;
-	auto start = input.cbegin();
+        /*-----------------------------------------------*/
+        for (int i = 0; i < tokensSize; i++)
+        {
+            /*----------------String Literals-------------------*/
 
+            /*----------------Comments----------------------*/
+            if (regex_match(linesofcode[i], commentRegex))
+            {
+                continue;
+            }
 
-	//---------------------------------------------------------------------------------------
-	regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)");
-	regex arithmeticOpRegex(R"((\+|-|\*|\/|%|\+\+|--|=))");
-	regex booleanOpRegex(R"((>=|<=|==|!=|>|<|\&\&|\|\||!|\&|\||\^|~|<<|>>|\?|\.\s|->))");
-	regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)(\*)?\b)");
-	regex stringLiteralRegex(R"(\".*\")");
-	regex numbersRegex(R"(((\+|-)?(-\+)*-?(0|[1-9][0-9]*)?(\.)?([1-9][0-9]*)(((e|E)(\+|-)?[0-9]+)?)|(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)))");
-	regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
-	//regex IdRegex(R"(^[a-zA-Z_][0-9a-zA-Z_]*$)");
-	//regex Exponential(R"(((\+-)*\+?|(-\+)*-?)(0|[1-9][0-9]*)(((e|E)(\+|-)?[0-9]+)?))");
-	//
-//----------------------------------------------------------------------------------------
+            /*----------------Keywords---------------------------*/
+            if (regex_search(linesofcode[i], match, keywordsRegex))
+            {
+                cout << "<< Keyword ," << match.str(0) << " >>" << endl;
+            }
 
-	cout << "Type \"return\" to close the program and print the symbol table" << endl;
-	while (true)
-	{
+            /*----------------Identifiers-------------------*/
+            if (regex_search(linesofcode[i], match, IdRegex) && linesofcode[i] != "quit")
+            {
+                string temp = match.str(0);
+                if (!regex_search(temp, match, keywordsRegex))
+                {
+                    if (!regex_search(temp, match, numbersRegex))
+                    {
+                        if (!regex_search(temp, match, stringLiteralRegex) && !regex_search(linesofcode[i], match, stringLiteralRegex))
+                        {
+                            if (!regex_search(temp, match, commentRegex))
+                            {
+                                cout << "<< Identifier ," << temp << " >>" << endl;
+                            }
+                        }
+                    }
+                }
+            }
 
-		cout << "Enter a line of code: ";
-		getline(cin, input);
-		if (input.empty() || regex_match(input, regex("^\\s*(//.*)?$")))
-		{
-			continue;
-		}
-		//------------- Delimiter's Regex
-		start = input.cbegin();
-		bool allow = true;
-		bool stringlit = true;
-		while (regex_search(start, input.cend(), match, delimitersRegex))
-		{
-			int size = input.size();
-			for (int i = 0; i < input.size(); i++) {
-				if (i > 0)
-				{
-					if (input[i] == '.' && isdigit(input[i - 1]) && isdigit(input[i + 1]) && size > 1) {
-						allow = false;
-					}
-				}
-				if (i == 0 && input[0] == '.' && isdigit(input[i + 1])) {
-					allow = false;
-				}
-			}
-			if (!allow) {
-				break;
-			}
-			bool allowadd = true;
-			cout << "<  " << match.str(0) << " , Delimiter >" << endl;
-			for (int i = 0; i < tokenTable.size(); i++) {
-				if (tokenTable[i].first == match.str(0))
-				{
-					allowadd = false;
-				}
-			}
-			if (allowadd) {
-				string temp = match.str(0);
-				tokenTable.push_back(make_pair(temp, "Delimiter"));
-			}
-			start = match[0].second;
-		}
+            /*----------------------------Delimiters--------------------------------*/
+            auto start = linesofcode[i].cbegin();
+            while (regex_search(start, linesofcode[i].cend(), match, delimitersRegex))
+            {
 
+                string temp = match.str(0);
+                if (!regex_search(linesofcode[i], numbersRegex))
+                {
+                    cout << "<< Delimiter ," << match.str(0) << "  >>" << endl;
+                }
+                start = match[0].second;
+            }
 
-		//------------- Strings's Regex
-		start = input.cbegin();
-		while (regex_search(start, input.cend(), match, stringLiteralRegex))
-		{
-			cout << "<  " << match.str(0) << " , String literal >" << endl;
-			stringlit = false;
-			start = match[0].second;
-		}
+            /*---------------Boolean Operators--------------------*/
+            if (regex_search(linesofcode[i], match, booleanOpRegex))
+            {
+                if (match.str(0) == ">=")
+                {
+                    cout << "<< More than or Equal Operator ," << match.str(0) << "  >>" << endl;
+                    boolOp = true;
+                }
+                else if (match.str(0) == "<=")
+                {
+                    cout << "<< Less than or Equal Operator ," << match.str(0) << "  >>" << endl;
+                    boolOp = true;
+                }
+                else if (match.str(0) == "==")
+                {
+                    cout << "<< Equality Operator ," << match.str(0) << " >>" << endl;
+                    boolOp = true;
+                }
+                else if (match.str(0) == "!=")
+                {
+                    cout << "<< Not Equal Operator ," << match.str(0) << "  >>" << endl;
+                    boolOp = true;
+                }
+                else if (match.str(0) == "<")
+                    cout << "<<Less than Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == ">")
+                    cout << "<<More Operator ," << match.str(0) << "   >>" << endl;
+                else if (match.str(0) == "&&")
+                    cout << "<<Logical AND Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == "||")
+                    cout << "<<Logical OR Operator ," << match.str(0) << " >>" << endl;
+                else if (match.str(0) == "!")
+                    cout << "<<Logical NOT Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == "&")
+                    cout << "<<Bitwise AND Operator ," << match.str(0) << " >>" << endl;
+                else if (match.str(0) == "|")
+                    cout << "<<Bitwise OR Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == "^")
+                    cout << "<<Bitwise XOR Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == "~")
+                    cout << "<<Bitwise NOT Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == ">>")
+                    cout << "<<Shift Right Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == "<<")
+                    cout << "<<Shift Left Operator ," << match.str(0) << "   >>" << endl;
+                else if (match.str(0) == "?")
+                    cout << "<<Ternary Conditional Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == ".")
+                    cout << "<<Operator ," << match.str(0) << "  >>" << endl;
+                else if (match.str(0) == "->")
+                {
+                    cout << "<<Operator ," << match.str(0) << "   >>" << endl;
+                    boolOp = true;
+                }
+            }
 
+            /*------------Arithmetic Operators-----------------------*/
+            if (regex_search(linesofcode[i], match, arithmeticOpRegex))
+            {
+                string temp = match.str(0);
+                if (!boolOp)
+                {
+                    if (match.str(0) == "=")
+                        cout << "<< Assignment Operator ," << match.str(0) << " >>" << endl;
+                    else if (match.str(0) == "+")
+                        cout << "<< Addition Operator ," << match.str(0) << "  >>" << endl;
+                    else if (match.str(0) == "-")
+                        cout << "<< Subtraction Operator ," << match.str(0) << "  >>" << endl;
+                    else if (match.str(0) == "*")
+                        cout << "<< Multiplicative Operator ," << match.str(0) << "  >>" << endl;
+                    else if (match.str(0) == "/")
+                        cout << "<< Division Operator ," << match.str(0) << "  >>" << endl;
+                    else if (match.str(0) == "%")
+                        cout << "<< Remainder Operator ," << match.str(0) << " >>" << endl;
+                    else if (match.str(0) == "++")
+                        cout << "<< Addition Unary Operator ," << match.str(0) << "  >>" << endl;
+                    else if (match.str(0) == "--")
+                        cout << "<< Subtraction Unary Operator ," << match.str(0) << "  >>" << endl;
+                }
+            }
 
-		//------------- Boolean's Regex
-		start = input.cbegin();
-		while (regex_search(start, input.cend(), match, booleanOpRegex))
-		{
-			cout << "<  " << match.str(0) << " , Boolean Operator >" << endl;
-			start = match[0].second;
-		}
+            /*----------------Numbers----------------------------*/
+            if (regex_search(linesofcode[i], match, numbersRegex))
+            {
+                string temp = match.str(0);
+                if (temp.find("0x") != string::npos)
+                {
+                    cout << "<< Hexadecimal Number ," << temp << "  >>" << endl;
+                }
+                else if (temp.find("0b") != string::npos)
+                {
+                    cout << "<< Binary Number ," << temp << "  >>" << endl;
+                }
+                else if (temp.find("e") != string::npos)
+                {
+                    cout << "<< Scientific Notation Number ," << temp << "  >>" << endl;
+                }
+                else if (temp.find(".") != string::npos)
+                {
+                    cout << "<< Floating Point Number ," << temp << " >>" << endl;
+                }
+                else if (temp.find("0") != string::npos)
+                {
+                    cout << "<< Octal Number ," << temp << "  >>" << endl;
+                }
+                else
+                {
+                    cout << "<< Decimal Number ," << temp << "  >>" << endl;
+                }
+            }
 
+            start = linesofcode[i].cbegin();
+            while (regex_search(start, linesofcode[i].cend(), match, stringLiteralRegex))
+            {
+                cout << "<< String Literal ," << match.str(0) << "  >>" << endl;
+                start = match[0].second;
+            }
+        }
+        if (linesofcode[0] == "quit")
+        {
+            break;
+        }
+        linesofcode.clear();
+    }
 
-		//------------- Arithmatic operation's Regex
-		start = input.cbegin();
-		while (regex_search(start, input.cend(), match, arithmeticOpRegex))
-		{
-			cout << "<  " << match.str(0) << " , Arithmetic Operator >" << endl;
-			start = match[0].second;
-		}
-
-
-		//------------- Keyword's Regex
-		start = input.cbegin();
-		while (regex_search(start, input.cend(), match, keywordsRegex))
-		{
-			cout << "<  " << match.str(0) << " , Keyword >" << endl;
-			start = match[0].second;
-		}
-
-
-		//------------- Identifiers's Regex
-		start = input.cbegin();
-		bool allowID = true;
-		while (regex_search(start, input.cend(), match, IdRegex))
-		{
-
-			for (int i = 0; i < input.size(); i++) {
-				// || (isalpha(input[i])&&input[i+1]!=NULL && input[i - 1] == '\"')
-				if ((input[i] == 'e' && isdigit(input[i - 1]) || ((input[i] == '\"')&&isalpha(input[i+1])))) {
-					allowID = false;
-				}
-			}
-			if (!allowID || !stringlit) {
-				break;
-			}
-			bool allowadd = true;
-			if (!regex_match(match.str(0), keywordsRegex) && !regex_match(match.str(0), numbersRegex))
-			{
-				cout << "<  " << match.str(0) << " , Identifier >" << endl;
-				for (int i = 0; i < symbolTable.size(); i++) {
-					if (symbolTable[i] == match.str(0))
-					{
-						allowadd = false;
-					}
-				}
-				if (allowadd) {
-					symbolTable.push_back(match.str(0));
-				}
-			}
-			start = match[0].second;
-		}
-
-
-		//------------- Number's Regex
-		start = input.cbegin();
-		bool expo = true;
-		while (regex_search(start, input.cend(), match, numbersRegex))
-		{
-			for (int i = 0; i < match.str(0).size(); i++) {
-				if (match.str(0)[i] == 'e') {
-					expo = false;
-				}
-			}
-			if (expo) {
-				if (isInt(match.str(0))) {
-
-					cout << "< " << match.str(0) << " , Number of Type Integer >" << endl;
-				}
-				else if (isFloat(match.str(0))) {
-					cout << "< " << match.str(0) << " , Number of Type Float >" << endl;
-				}
-				else {
-					cout << "< " << match.str(0) << " , Number But the type is not identified >" << endl;
-				}
-			}
-			else {
-				cout << "< " << match.str(0) << " , Exponential >" << endl;
-
-			}
-
-			start = match[0].second;
-		}
-		if (input == "return")
-			break;
-
-	}
-
-	//------------- Printing the symbol table
-	for (int i = 0; i < symbolTable.size(); i++) {
-		symbolT.addRow(symbolTable[i]);
-	}
-	cout << endl << endl << "Symbol Table" << endl;
-	cout << "-------------------------" << endl;
-	symbolT.print(cout);
-
-
-	/*for (int i = 0; i < tokenTable.size(); i++) {
-		tokenT.addRow(tokenTable[i].first,tokenTable[i].second,"s");
-	}*/
-	cout << endl << endl << "Token Table" << endl;
-	cout << "-------------------------" << endl;
-	tokenT.print(cout);
-
+    /*------------- Printing the symbol table-------------------*/
+    // for (int i = 0; i < symbolTable.size(); i++)
+    // {
+    //     symbolT.addRow(symbolTable[i]);
+    // }
+    // cout << endl
+    //      << endl
+    //      << "Symbol Table" << endl;
+    // cout << "-------------------------" << endl;
+    // symbolT.print(cout);
 }
