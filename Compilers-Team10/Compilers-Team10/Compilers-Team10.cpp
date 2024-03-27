@@ -33,21 +33,13 @@ int main()
 #endif
 
     //---------------------------------------------------------------------------------------
-    //Seif
     regex commentRegex(R"(\/\/.*|\/\*.*\*\/)");
-    //Seif
     regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)\b)");
-    //Salah
     regex booleanOpRegex(R"((>=|<=|==|!=|>>|<<|\&\&|\|\||!|\&|\||\^|~|<|>|\?|\.\s|->))");
-    //Salah
     regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
-    //Joe
     regex numbersRegex(R"(((-\+)*-?(0|[1-9][0-9]*)?(\.)?([1-9][0-9]*)(((e|E)(\+|-)?[0-9]+)?)|(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)))");
-    //Ahmed
     regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)"); 
-    //Ahmed
     regex arithmeticOpRegex(R"((\+\+|--|\*|\/|%|\+|-|=))");
-    //Ehab
     regex stringLiteralRegex(R"(\".*\")");
 
     /*-----------------------------------------------------------------------------------------*/
