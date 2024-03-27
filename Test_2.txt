@@ -1,0 +1,15 @@
+/*Testing Functions*/ 
+
+int swap ( int a , int b )
+{
+int temp ; 
+int temp = a ;
+int a = b ;
+int b = temp ;
+return temp ;
+}
+
+int main() { 
+int x = 100 , y = 200 ;
+printf( "Swap is : %d" , swap( x , y ) );
+}

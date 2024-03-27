@@ -1,0 +1,13 @@
+/*Testing Our Compiler*/
+int main ( ) {
+    int a = 1 , b = 2 ; 
+    b++ ;
+    char* ptr ;
+    double b = 10.5 , c = 11.1 ;
+    if ( a > b )
+    return true ;
+    else 
+    return false ;
+    double sum = b + c ;
+    printf( "Hello World %d" ) ;   
+}
