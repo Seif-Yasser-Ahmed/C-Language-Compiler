@@ -7,7 +7,7 @@
 using namespace std;
 
 // #define Test1
-// #define Test2
+//#define Test2
 #define Test3
 
 int main()
@@ -33,14 +33,23 @@ int main()
 #endif
 
     //---------------------------------------------------------------------------------------
-    regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)");
-    regex arithmeticOpRegex(R"((\+\+|--|\*|\/|%|\+|-|=))");
-    regex booleanOpRegex(R"((>=|<=|==|!=|>>|<<|\&\&|\|\||!|\&|\||\^|~|<|>|\?|\.\s|->))");
-    regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)\b)");
-    regex stringLiteralRegex(R"(\".*\")");
-    regex numbersRegex(R"(((-\+)*-?(0|[1-9][0-9]*)?(\.)?([1-9][0-9]*)(((e|E)(\+|-)?[0-9]+)?)|(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)))");
-    regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
+    //Seif
     regex commentRegex(R"(\/\/.*|\/\*.*\*\/)");
+    //Seif
+    regex keywordsRegex(R"(\b(auto|static|const|_Alignas|sizeof|break|inline|while|_Alignof|_Generic|case|long|for|_Atomic|_Imaginary|char|short|if|_Bool|_Noreturn|int|struct|do|typedef|_Complex|float|union|return|else|_Static_assert|double|enum|extern|void|_Thread_local|signed|unsigned|register|switch|volatile|continue|goto|restrict|default)\b)");
+    //Salah
+    regex booleanOpRegex(R"((>=|<=|==|!=|>>|<<|\&\&|\|\||!|\&|\||\^|~|<|>|\?|\.\s|->))");
+    //Salah
+    regex IdRegex(R"((?:[_a-zA-Z][_a-zA-Z0-9]*|0x[0-9a-fA-F]+|0b[01]+))");
+    //Joe
+    regex numbersRegex(R"(((-\+)*-?(0|[1-9][0-9]*)?(\.)?([1-9][0-9]*)(((e|E)(\+|-)?[0-9]+)?)|(0[bB][01]+|0[xX][0-9a-fA-F]+|0[0-7]*|[1-9][0-9]*)))");
+    //Ahmed
+    regex delimitersRegex(R"(\{|\}|\(|\)|;|,|\[|\]|\.|:)"); 
+    //Ahmed
+    regex arithmeticOpRegex(R"((\+\+|--|\*|\/|%|\+|-|=))");
+    //Ehab
+    regex stringLiteralRegex(R"(\".*\")");
+
     /*-----------------------------------------------------------------------------------------*/
     while (getline(MyReadFile, myText))
     {
@@ -79,6 +88,7 @@ int main()
         } while (iss);
     }
     /*-----------------------------------------------*/
+
     tokensSize = linesofcode.size();
 
     /*-----------------------------------------------*/
@@ -242,22 +252,13 @@ int main()
         }
 
         /*----------------String Literals-------------------*/
-        start = linesofcode[i].cbegin();
-        while (regex_search(start, linesofcode[i].cend(), match, stringLiteralRegex))
+        //start = linesofcode[i].cbegin();
+        if (regex_search(linesofcode[i], match, stringLiteralRegex))
         {
-            cout << "<< String Literal ," << match.str(0) << "  >>" << endl;
+            cout << "<< String Literal , " << match.str(0) << "  >>" << endl;
             start = match[0].second;
         }
     }
 }
 
-/*------------- Printing the symbol table-------------------*/
-// for (int i = 0; i < symbolTable.size(); i++)
-// {
-//     symbolT.addRow(symbolTable[i]);
-// }
-// cout << endl
-//      << endl
-//      << "Symbol Table" << endl;
-// cout << "-------------------------" << endl;
-// symbolT.print(cout);
+
