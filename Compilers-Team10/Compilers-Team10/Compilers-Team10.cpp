@@ -8,14 +8,14 @@
 #include "VariadicTable.h"
 using namespace std;
 
-//#define Test1
-//#define Test2
+// #define Test1
+// #define Test2
 #define Test3
 
 int main()
 {
     vector<pair<string, string>> tokenVector;
-    VariadicTable<string, string> tokenTable({ "token","Type" });
+    VariadicTable<string, string> tokenTable({ "token", "Type" });
     int tokensSize = 0;
     string myText;
     string delimiter = " ";
@@ -33,7 +33,7 @@ int main()
 #endif
 
 #ifdef Test3
-    ifstream MyReadFile("C:\\Users\\Seif Yasser\\Downloads\\Test_3.txt");
+    ifstream MyReadFile("C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Test_3.txt");
 #endif
 
     //---------------------------------------------------------------------------------------
@@ -64,6 +64,10 @@ int main()
         {
             string subs;
             iss >> subs;
+            if (subs[0] == '/' && subs[1] == '/')
+            {
+                break;
+            }
             if (subs[0] == '/' && subs[1] == '*')
             {
                 while (subs[subs.length() - 2] != '*' && subs[subs.length() - 1] != '/')
@@ -126,7 +130,6 @@ int main()
                         {
                             cout << "<< Identifier ," << temp << " >>" << endl;
                             tokenVector.push_back(pair<string, string>(temp, "Identifier"));
-
                         }
                     }
                 }
@@ -143,7 +146,6 @@ int main()
             {
                 cout << "<< Delimiter ," << match.str(0) << "  >>" << endl;
                 tokenVector.push_back(pair<string, string>(match.str(0), "Delimiter"));
-
             }
             start = match[0].second;
         }
@@ -284,43 +286,36 @@ int main()
                 {
                     cout << "<< Assignment Operator ," << match.str(0) << " >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "Assignment Operator"));
-
                 }
                 else if (match.str(0) == "+")
                 {
                     cout << "<< Addition Operator ," << match.str(0) << "  >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "addition Operator"));
-
                 }
                 else if (match.str(0) == "-")
                 {
                     cout << "<< Subtraction Operator ," << match.str(0) << "  >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "subtraction Operator"));
-
                 }
                 else if (match.str(0) == "*")
                 {
                     cout << "<< Multiplicative Operator ," << match.str(0) << "  >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "multiplicative Operator"));
-
                 }
                 else if (match.str(0) == "/")
                 {
                     cout << "<< Division Operator ," << match.str(0) << "  >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "division Operator"));
-
                 }
                 else if (match.str(0) == "%")
                 {
                     cout << "<< Remainder Operator ," << match.str(0) << " >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "remainder Operator"));
-
                 }
                 else if (match.str(0) == "++")
                 {
                     cout << "<< Addition Unary Operator ," << match.str(0) << "  >>" << endl;
                     tokenVector.push_back(pair<string, string>(match.str(0), "Addition Unary Operator"));
-
                 }
                 else if (match.str(0) == "--")
                 {
@@ -338,37 +333,31 @@ int main()
             {
                 cout << "<< Hexadecimal Number ," << temp << "  >>" << endl;
                 tokenVector.push_back(pair<string, string>(temp, "Hexadecimal Number"));
-
             }
             else if (temp.find("0b") != string::npos)
             {
                 cout << "<< Binary Number ," << temp << "  >>" << endl;
                 tokenVector.push_back(pair<string, string>(temp, "Binary Number"));
-
             }
             else if (temp.find("e") != string::npos)
             {
                 cout << "<< Scientific Notation Number ," << temp << "  >>" << endl;
                 tokenVector.push_back(pair<string, string>(temp, "Scientific Notation Number"));
-
             }
             else if (temp.find(".") != string::npos)
             {
                 cout << "<< Floating Point Number ," << temp << " >>" << endl;
                 tokenVector.push_back(pair<string, string>(temp, "Floating Point Number"));
-
             }
             else if (temp[0] == '0')
             {
                 cout << "<< Octal Number ," << temp << "  >>" << endl;
                 tokenVector.push_back(pair<string, string>(temp, "Octal Number"));
-
             }
             else
             {
                 cout << "<< Decimal Number ," << temp << "  >>" << endl;
                 tokenVector.push_back(pair<string, string>(temp, "Decimal Number"));
-
             }
         }
 
@@ -382,7 +371,8 @@ int main()
         }
     }
 
-    for (const auto& pair : tokenVector) {
+    for (const auto& pair : tokenVector)
+    {
         cout << pair.first << ": " << pair.second << endl;
         tokenTable.addRow(pair.first, pair.second);
     }
