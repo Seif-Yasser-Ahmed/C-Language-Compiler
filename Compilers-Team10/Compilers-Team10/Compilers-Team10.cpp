@@ -8,14 +8,15 @@
 #include "VariadicTable.h"
 using namespace std;
 
-// #define Test1
+/*Fix 10e4 Exponential number e4 (identifier) */
+#define Test1
 // #define Test2
-#define Test3
+// #define Test3
 
 int main()
 {
     vector<pair<string, string>> tokenVector;
-    VariadicTable<string, string> tokenTable({ "token", "Type" });
+    VariadicTable<string, string> tokenTable({"token", "Type"});
     int tokensSize = 0;
     string myText;
     string delimiter = " ";
@@ -23,13 +24,14 @@ int main()
     vector<string> linesofcode;
     smatch match;
     bool boolOp = false;
+    bool isStringLiteral = false;
 
 #ifdef Test1
-    ifstream MyReadFile("C:\\Users\\Seif Yasser\\Downloads\\Test_1.txt");
+    ifstream MyReadFile("C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Test_1.txt");
 #endif
 
 #ifdef Test2
-    ifstream MyReadFile("C:\\Users\\Seif Yasser\\Downloads\\Test_2.txt");
+    ifstream MyReadFile("C:\\ASU\\ASU\\SEM 6\\Design of compilers\\Compilers-project\\Test_2.txt");
 #endif
 
 #ifdef Test3
@@ -101,6 +103,7 @@ int main()
     /*-----------------------------------------------*/
     for (int i = 0; i < tokensSize; i++)
     {
+        isStringLiteral = false;
         boolOp = false;
 
         /*----------------Comments----------------------*/
@@ -150,177 +153,193 @@ int main()
             start = match[0].second;
         }
 
-        /*---------------Boolean Operators--------------------*/
-        if (regex_search(linesofcode[i], match, booleanOpRegex))
+        /*----------------String Literals-------------------*/
+        // start = linesofcode[i].cbegin();
+        if (regex_search(linesofcode[i], match, stringLiteralRegex))
         {
-            if (match.str(0) == ">=")
-            {
-                string s = "More than or Equal Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
+            cout << "<< String Literal , " << match.str(0) << "  >>" << endl;
+            tokenVector.push_back(pair<string, string>(match.str(0), "String Literal"));
+            start = match[0].second;
+            isStringLiteral = true;
+        }
 
-                boolOp = true;
-            }
-            else if (match.str(0) == "<=")
+        /*---------------Boolean Operators--------------------*/
+        if (!isStringLiteral)
+        {
+            if (regex_search(linesofcode[i], match, booleanOpRegex))
             {
-                string s = "Less than or Equal Operator";
-                cout << "<< Less than or Equal Operator ," << match.str(0) << "  >>" << endl;
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                if (match.str(0) == ">=")
+                {
+                    string s = "More than or Equal Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
 
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
+                    boolOp = true;
+                }
+                else if (match.str(0) == "<=")
+                {
+                    string s = "Less than or Equal Operator";
+                    cout << "<< Less than or Equal Operator ," << match.str(0) << "  >>" << endl;
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
 
-                boolOp = true;
-            }
-            else if (match.str(0) == "==")
-            {
-                string s = "Equality Operator";
-                cout << "<< Equality Operator ," << match.str(0) << " >>" << endl;
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
 
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
+                    boolOp = true;
+                }
+                else if (match.str(0) == "==")
+                {
+                    string s = "Equality Operator";
+                    cout << "<< Equality Operator ," << match.str(0) << " >>" << endl;
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
 
-                boolOp = true;
-            }
-            else if (match.str(0) == "!=")
-            {
-                string s = "Not Equal Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
 
-                boolOp = true;
-            }
-            else if (match.str(0) == "<")
-            {
-                string s = "Less than Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == ">")
-            {
-                string s = "More Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "&&")
-            {
-                string s = "Logical AND Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "||")
-            {
-                string s = "Logical OR Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "!")
-            {
-                string s = "Logical NOT Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "&")
-            {
-                string s = "Bitwise AND Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "|")
-            {
-                string s = "Bitwise OR Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "^")
-            {
-                string s = "Bitwise XOR Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "~")
-            {
-                string s = "Bitwise NOT Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == ">>")
-            {
-                string s = "Shift Right Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "<<")
-            {
-                string s = "Shift Left Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "?")
-            {
-                string s = "Ternary Conditional Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == ".")
-            {
-                string s = "Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-            }
-            else if (match.str(0) == "->")
-            {
-                string s = "Operator";
-                cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                tokenVector.push_back(pair<string, string>(match.str(0), s));
-                boolOp = true;
+                    boolOp = true;
+                }
+                else if (match.str(0) == "!=")
+                {
+                    string s = "Not Equal Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+
+                    boolOp = true;
+                }
+                else if (match.str(0) == "<")
+                {
+                    string s = "Less than Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == ">")
+                {
+                    string s = "More Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "&&")
+                {
+                    string s = "Logical AND Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "||")
+                {
+                    string s = "Logical OR Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "!")
+                {
+                    string s = "Logical NOT Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "&")
+                {
+                    string s = "Bitwise AND Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "|")
+                {
+                    string s = "Bitwise OR Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "^")
+                {
+                    string s = "Bitwise XOR Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "~")
+                {
+                    string s = "Bitwise NOT Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == ">>")
+                {
+                    string s = "Shift Right Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "<<")
+                {
+                    string s = "Shift Left Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "?")
+                {
+                    string s = "Ternary Conditional Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == ".")
+                {
+                    string s = "Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                }
+                else if (match.str(0) == "->")
+                {
+                    string s = "Operator";
+                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    tokenVector.push_back(pair<string, string>(match.str(0), s));
+                    boolOp = true;
+                }
             }
         }
 
         /*------------Arithmetic Operators-----------------------*/
-        if (regex_search(linesofcode[i], match, arithmeticOpRegex))
+        if (!isStringLiteral)
         {
-            string temp = match.str(0);
-            if (!boolOp)
+            if (regex_search(linesofcode[i], match, arithmeticOpRegex))
             {
-                if (match.str(0) == "=")
+                string temp = match.str(0);
+                if (!boolOp)
                 {
-                    cout << "<< Assignment Operator ," << match.str(0) << " >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "Assignment Operator"));
-                }
-                else if (match.str(0) == "+")
-                {
-                    cout << "<< Addition Operator ," << match.str(0) << "  >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "addition Operator"));
-                }
-                else if (match.str(0) == "-")
-                {
-                    cout << "<< Subtraction Operator ," << match.str(0) << "  >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "subtraction Operator"));
-                }
-                else if (match.str(0) == "*")
-                {
-                    cout << "<< Multiplicative Operator ," << match.str(0) << "  >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "multiplicative Operator"));
-                }
-                else if (match.str(0) == "/")
-                {
-                    cout << "<< Division Operator ," << match.str(0) << "  >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "division Operator"));
-                }
-                else if (match.str(0) == "%")
-                {
-                    cout << "<< Remainder Operator ," << match.str(0) << " >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "remainder Operator"));
-                }
-                else if (match.str(0) == "++")
-                {
-                    cout << "<< Addition Unary Operator ," << match.str(0) << "  >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "Addition Unary Operator"));
-                }
-                else if (match.str(0) == "--")
-                {
-                    cout << "<< Subtraction Unary Operator ," << match.str(0) << "  >>" << endl;
-                    tokenVector.push_back(pair<string, string>(match.str(0), "subtraction Unary Operator"));
+                    if (match.str(0) == "=")
+                    {
+                        cout << "<< Assignment Operator ," << match.str(0) << " >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "Assignment Operator"));
+                    }
+                    else if (match.str(0) == "+")
+                    {
+                        cout << "<< Addition Operator ," << match.str(0) << "  >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "addition Operator"));
+                    }
+                    else if (match.str(0) == "-")
+                    {
+                        cout << "<< Subtraction Operator ," << match.str(0) << "  >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "subtraction Operator"));
+                    }
+                    else if (match.str(0) == "*")
+                    {
+                        cout << "<< Multiplicative Operator ," << match.str(0) << "  >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "multiplicative Operator"));
+                    }
+                    else if (match.str(0) == "/")
+                    {
+                        cout << "<< Division Operator ," << match.str(0) << "  >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "division Operator"));
+                    }
+                    else if (match.str(0) == "%")
+                    {
+                        cout << "<< Remainder Operator ," << match.str(0) << " >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "remainder Operator"));
+                    }
+                    else if (match.str(0) == "++")
+                    {
+                        cout << "<< Addition Unary Operator ," << match.str(0) << "  >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "Addition Unary Operator"));
+                    }
+                    else if (match.str(0) == "--")
+                    {
+                        cout << "<< Subtraction Unary Operator ," << match.str(0) << "  >>" << endl;
+                        tokenVector.push_back(pair<string, string>(match.str(0), "subtraction Unary Operator"));
+                    }
                 }
             }
         }
@@ -360,18 +379,9 @@ int main()
                 tokenVector.push_back(pair<string, string>(temp, "Decimal Number"));
             }
         }
-
-        /*----------------String Literals-------------------*/
-        // start = linesofcode[i].cbegin();
-        if (regex_search(linesofcode[i], match, stringLiteralRegex))
-        {
-            cout << "<< String Literal , " << match.str(0) << "  >>" << endl;
-            tokenVector.push_back(pair<string, string>(match.str(0), "String Literal"));
-            start = match[0].second;
-        }
     }
 
-    for (const auto& pair : tokenVector)
+    for (const auto &pair : tokenVector)
     {
         cout << pair.first << ": " << pair.second << endl;
         tokenTable.addRow(pair.first, pair.second);

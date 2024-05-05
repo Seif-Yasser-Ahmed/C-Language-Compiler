@@ -9,5 +9,6 @@ int main ( ) {
     else 
     return false ;
     double sum = b + c ;
-    printf( "Hello World %d" ) ;   
+    printf( "Hello World %d" , 10 ) ;   
+
 }
