@@ -7,6 +7,7 @@ using namespace std;
 struct Token {
     string lexeme; // the string
     string type;
+    int num;
 };
 
 
@@ -69,18 +70,19 @@ private:
             }
         }
 
-        if (getCurrentToken().lexeme == ";") { //this is not optional
+        if (getCurrentToken().lexeme == ";") { 
             consumeToken(); // Consume ';'
         }
         else {
             if (getCurrentToken().lexeme == "(") {
-                parseExpression();
+                if(!parseExpression()) return false;
             }
             if (getCurrentToken().lexeme == ";") { //this is not optional
                 consumeToken(); // Consume ';'
             }
             else{
                 //cout << "We're here" << endl;
+                //if (scErrorCall()) then say expected semicolon
                 reportError("Expected semicolon");
                 return false;
             }
@@ -338,6 +340,9 @@ private:
                 else consumeToken();
             }
         }
+        if (flag == false) {
+            reportError("Error at function call");
+        }
         return flag;
     }
 
@@ -361,6 +366,9 @@ private:
             else consumeToken();
         }
         //cout << "DONE!" << endl;
+        if (flag == false) {
+            reportError("Error at function declaration");
+        }
         return flag;
     }
 
@@ -374,11 +382,11 @@ int main() {
         {"(", "BRACKET"},
         //{"float", "TYPE_SPECIFIER"},
         {"y", "ID"},
-        /*{",", "COMMA"},
+        {",", "COMMA"},
         {"int", "TYPE_SPECIFIER"},
-        {"z", "ID"},*/
+        {"z", "ID"},
         {")", "BRACKET"},
-        {";", "SEMI"}
+        {";", "SEMI"},
         /*{"=", "ASSIGNMENT"},
         {"10", "CONSTANT"},
         {";", "SEMI"}*/
