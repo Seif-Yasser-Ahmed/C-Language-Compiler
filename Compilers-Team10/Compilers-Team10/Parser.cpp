@@ -73,8 +73,17 @@ private:
             consumeToken(); // Consume ';'
         }
         else {
-            reportError("Expected semicolon");
-            return false;
+            if (getCurrentToken().lexeme == "(") {
+                parseExpression();
+            }
+            if (getCurrentToken().lexeme == ";") { //this is not optional
+                consumeToken(); // Consume ';'
+            }
+            else{
+                //cout << "We're here" << endl;
+                reportError("Expected semicolon");
+                return false;
+            }
         }
 
         return true; // No errors encountered
@@ -274,8 +283,8 @@ private:
                 return false; 
             }
             if (getCurrentToken().lexeme != ")") {
-                reportError("Expected ')'");
-                return false;
+                //reportError("Expected ')'");
+                return parseFunctionDeclareExpression();
             }
             consumeToken(); 
             return parseCastExpression();
@@ -304,10 +313,34 @@ private:
             return true; 
         }
         else {
-            reportError("Invalid unary expression");
-            return false;
+            //reportError("Invalid unary expression");
+            return parseFunctionDeclareExpression();
         }
     }
+
+    bool parseFunctionDeclareExpression() {
+        bool flag = false;
+        if (getCurrentToken().type == "ID") {
+            consumeToken();
+            while (getCurrentToken().type == "COMMA"){
+                consumeToken();
+                if (getCurrentToken().type == "TYPE_SPECIFIER") {
+                    consumeToken();
+                    if (getCurrentToken().type == "ID") {
+                        consumeToken();
+                        flag = true;
+                    }
+                    else flag = false;
+                }
+                else flag = false;
+            } 
+            if (getCurrentToken().lexeme != ")") flag = false;
+            else consumeToken();
+        }
+        //cout << "DONE!" << endl;
+        return flag;
+    }
+
 };
 
 int main() {
@@ -315,12 +348,17 @@ int main() {
     vector<Token> tokens = {
         {"int", "TYPE_SPECIFIER"},
         {"x", "ID"},
-        {";", "SEMI"},
+        {"(", "BRACKET"},
         {"float", "TYPE_SPECIFIER"},
         {"y", "ID"},
-        {"=", "ASSIGNMENT"},
-        {"10", "CONSTANT"},
+        {",", "COMMA"},
+        {"int", "TYPE_SPECIFIER"},
+        {"z", "ID"},
+        {")", "BRACKET"},
         {";", "SEMI"}
+        /*{"=", "ASSIGNMENT"},
+        {"10", "CONSTANT"},
+        {";", "SEMI"}*/
     };
 
     Parser parser(tokens);
