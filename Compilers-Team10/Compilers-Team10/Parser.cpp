@@ -19,16 +19,17 @@ public:
         return parseDeclarationList(); // we check with this if parsing successful 
     }
 
+
 private:
     const vector<Token>& tokens; // vector of token 
     size_t currentTokenIndex; // 3ashan netabe3 el tokens index
+    bool ifCond = false;
 
     
     Token getCurrentToken() {
         return tokens[currentTokenIndex];
     }
 
-    
     void consumeToken() { // go to next token
         currentTokenIndex++;
     }
@@ -43,6 +44,7 @@ private:
     bool parseDeclarationList() { //just to loop on our vector and start the algorithm for recursive descent parsing
         while (currentTokenIndex < tokens.size()) {
             if (!parseDeclaration()) { // recursive descent technique, a lot of recursion and function calls will be made to check grammar 
+                cout << getCurrentToken().lexeme << endl;
                 return false; // there is error 
             }
         }
@@ -50,19 +52,29 @@ private:
     }
 
     bool parseDeclaration() { //matching tokens here in appropriate order
-        if (!parseTypeSpecifier()) { //must find float, int,....
-            reportError("Expected type specifier");
-            return false; //error 
+        if (getCurrentToken().lexeme == "}" && currentTokenIndex == tokens.size() - 1) {
+            consumeToken();
+            return true;
+        }
+        if (!parseTypeSpecifier() && getCurrentToken().type!= "BLOCK") { //must find float, int,....
+             reportError("Expected type specifier");
+             return false; //error 
         }
 
         if (getCurrentToken().type == "ID") { //must get identifier afte type specifier ex: x in int x
             consumeToken(); 
         }
-        else {
+        else if (getCurrentToken().type != "BLOCK"){
             reportError("Expected identifier");
             return false; //error 
         }
-
+        if (getCurrentToken().type == "BLOCK") {
+            parseBlockStatement();
+        }
+        if (getCurrentToken().lexeme == "}" && currentTokenIndex == tokens.size() - 1) {
+            consumeToken();
+            return true;
+        }
         if (getCurrentToken().lexeme == "=") { //this is optional, not having '=' wont cause errors 
             consumeToken(); 
             if (!parseExpression()) { //check expressions conform to grammar 
@@ -72,6 +84,9 @@ private:
 
         if (getCurrentToken().lexeme == ";") { 
             consumeToken(); // Consume ';'
+            /*if (!parseExpression()) {
+                return false;
+            } */
         }
         else {
             if (getCurrentToken().lexeme == "(") {
@@ -79,6 +94,9 @@ private:
             }
             if (getCurrentToken().lexeme == ";") { //this is not optional
                 consumeToken(); // Consume ';'
+                if (currentTokenIndex < tokens.size()) {
+                    if (!parseExpression())return false;
+                }
             }
             else{
                 //cout << "We're here" << endl;
@@ -87,7 +105,6 @@ private:
                 return false;
             }
         }
-
         return true; // No errors encountered
     }
 
@@ -102,6 +119,10 @@ private:
     }
 
     bool parseExpression() { //parsing expressions, like and, or, addition, shifting,.... 
+        if (getCurrentToken().type == "BLOCK") {
+            //cout << parseBlockStatement();
+            parseBlockStatement();
+        }
         return parseConditionalExpression();
     }
 
@@ -281,12 +302,12 @@ private:
     bool parseCastExpression() { // when u cast the datatype ex: x = (int)y;
         if (getCurrentToken().lexeme == "(") {
             consumeToken(); 
-            if (!parseTypeSpecifier()) {
+            if (!parseTypeSpecifier() && !ifCond) {
                 return parseFunctionCallExpression();
             }
             if (getCurrentToken().lexeme != ")") {
                 //reportError("Expected ')'");
-                return parseFunctionDeclarationExpression();
+                if (!ifCond) return parseFunctionDeclarationExpression();
             }
             consumeToken(); 
             return parseCastExpression();
@@ -299,25 +320,33 @@ private:
     bool parseUnaryExpression() {
         if (getCurrentToken().type == "ID" || getCurrentToken().type == "CONSTANT" ||
             getCurrentToken().type == "STRING_LITERAL") {
-            consumeToken(); 
-            return true; 
+            consumeToken();
+            return true;
         }
         else if (getCurrentToken().lexeme == "(") {
-            consumeToken(); 
-            if (!parseExpression()) { 
-                return false; 
+            consumeToken();
+            if (!parseExpression()) {
+                return false;
             }
             if (getCurrentToken().lexeme != ")") {
                 reportError("Expected ')'");
                 return false;
             }
             consumeToken();
-            return true; 
+            return true;
+        }
+        else if (getCurrentToken().type == "BLOCK") {
+            //cout << "Block, lexeme is " << getCurrentToken().lexeme << endl;
+            return parseBlockStatement();
         }
         else {
             //reportError("Invalid unary expression");
-            return parseFunctionDeclarationExpression();
+            //cout << "func declaration, lexeme is " << getCurrentToken().lexeme << endl;
+            cout << getCurrentToken().lexeme << endl;
+            if (!ifCond)return parseFunctionDeclarationExpression();
+            //else parseIf();
         }
+        
     }
 
     bool parseFunctionCallExpression() {
@@ -346,7 +375,7 @@ private:
         return flag;
     }
 
-    bool parseFunctionDeclarationExpression() { //also used for declaring functions with no parameters 
+    bool parseFunctionDeclarationExpression() {  
         bool flag = false;
         if (getCurrentToken().type == "ID") {
             consumeToken();
@@ -367,36 +396,162 @@ private:
         }
         //cout << "DONE!" << endl;
         if (flag == false) {
+            cout << getCurrentToken().lexeme << endl;
             reportError("Error at function declaration");
+            return flag;
         }
+        /*if (getCurrentToken().lexeme == "{") {
+            flag = parseFnBlock();
+        }*/
         return flag;
     }
 
+    bool parseBlockStatement() {
+        if (getCurrentToken().type == "BLOCK" ) {
+            if (getCurrentToken().lexeme == "if") {
+                ifCond = true;
+                //cout << "TRUE" << " "<<ifCond << endl;
+                return parseIf();
+            }//for if, else if and else
+            if (getCurrentToken().lexeme == "{") return true;
+            if (getCurrentToken().lexeme == "}") return true;
+
+            /*else if (getCurrentToken().lexeme == "for") if (!parseFor())return false;
+            else if (getCurrentToken().lexeme == "while") if (!parseWhile())return false;
+            else if (getCurrentToken().lexeme == "do") if (!parseDo())return false;*/
+        }
+        else {
+            consumeToken();
+            return true;
+        }
+    }
+
+    bool parseIf() {
+        consumeToken();
+        if (getCurrentToken().lexeme == "(") {
+            consumeToken();
+            if (!parseExpression()) return false;
+            //if (getCurrentToken().lexeme == "(") return parseIf();
+            if (getCurrentToken().lexeme != ")") { 
+                return false; 
+            }
+            else consumeToken();
+            if (getCurrentToken().lexeme=="{"){
+                consumeToken();
+                
+                //cout << getCurrentToken().lexeme << getCurrentToken().type << endl;
+                if (!parseDeclaration()) return false;
+                if (getCurrentToken().lexeme == "}") {
+                    /*consumeToken();*/
+                    ifCond = false; //t2reeban 8alat
+                    return true;
+                }
+            }
+            return true;
+        }
+        else {
+            reportError("invalid if condition syntax");
+            return false;
+        }
+    }
+
+   /* bool parseFor() {
+
+    }
+    bool parseWhile() {
+
+    }
+
+    bool parseDo() {
+
+    }*/
 };
 
-int main() {
-    // replace with actual tokens from our scanner, this vector is made to store the tokens 
+int main()
+{
+    // replace with actual tokens from our scanner, this vector is made to store the tokens
     vector<Token> tokens = {
+        //***************************Test1**********************************// if condition (WORKING!!!!!!!!)
+       /*{"int", "TYPE_SPECIFIER"},
+        {"y", "ID"},
+        {";", "SEMI"},
+        {"if", "BLOCK"},
+        {"(", "BRACKET"},
+        {"y", "ID"},
+        {"==", "ASSIGNMENT"},
+        {"5", "CONSTANT"},
+        {")", "BRACKET"},
+        {"{", "BLOCK"},
+        {"int", "TYPE_SPECIFIER"},
+        {"x", "ID"},
+        {";", "SEMI"},
+        {"}", "BLOCK"}*/
+        //***************************Test2***********************************// Basic test, assignments (WORKING)
+        /*{"int", "TYPE_SPECIFIER"},
+        {"x", "ID"},
+        {";", "SEMI"},
+        {"float", "TYPE_SPECIFIER"},
+        {"y", "ID"},
+        {"=", "ASSIGNMENT"},
+        {"10", "CONSTANT"},
+        {";", "SEMI"},*/
+        //****************************Test3*********************************// function declaration, calls, empty parameters list (WORKING)
+        /*{"int", "TYPE_SPECIFIER"},
+        {"x", "ID"},
+        {"(", "BRACKET"},
+        {"float", "TYPE_SPECIFIER"},
+        {"y", "ID"},
+        {",", "COMMA"},
+        {"int", "TYPE_SPECIFIER"},
+        {"z", "ID"},
+        {")", "BRACKET"},
+        {";", "SEMI"},*/
+        //****************************Test4*********************************// Test 2 + Test 3
+        {"int", "TYPE_SPECIFIER"},
+        {"x", "ID"},
+        {";", "SEMI"},
+        {"float", "TYPE_SPECIFIER"},
+        {"y", "ID"},
+        {"=", "ASSIGNMENT"},
+        {"10", "CONSTANT"},
+        {";", "SEMI"},
         {"int", "TYPE_SPECIFIER"},
         {"x", "ID"},
         {"(", "BRACKET"},
-        //{"float", "TYPE_SPECIFIER"},
+        {"float", "TYPE_SPECIFIER"},
         {"y", "ID"},
         {",", "COMMA"},
         {"int", "TYPE_SPECIFIER"},
         {"z", "ID"},
         {")", "BRACKET"},
         {";", "SEMI"},
-        /*{"=", "ASSIGNMENT"},
-        {"10", "CONSTANT"},
-        {";", "SEMI"}*/
+        //Test 2 + Test 3 dont work when Test 1 is added to them
+        
     };
 
+    
+    /*{"int", "TYPE_SPECIFIER"},
+    {"x", "ID"},
+    {"(", "BRACKET"},
+    {"float", "TYPE_SPECIFIER"},
+    {"y", "ID"},
+    {",", "COMMA"},
+    {"int", "TYPE_SPECIFIER"},
+    {"z", "ID"},
+    {")", "BRACKET"},
+    {";", "SEMI"},*/
+    /*{"=", "ASSIGNMENT"},
+    {"10", "CONSTANT"},
+    {";", "SEMI"}*/
+    //};
+
     Parser parser(tokens);
-    if (parser.parseProgram()) {
+    if (parser.parseProgram())
+    {
         cout << "Parsing successful!" << endl;
     }
-    else {
+    else
+    {
         cout << "Parsing failed!" << endl;
     }
 }
