@@ -1,16 +1,6 @@
 ﻿  Compilers-Team10.cpp
-C:\ASU\ASU\SEM 6\Design of compilers\Compilers-project\Compilers-Team10\Compilers-Team10\Compilers-Team10.cpp(99,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\ASU\ASU\SEM 6\Design of compilers\Compilers-project\Compilers-Team10\Compilers-Team10\VariadicTable.h(93,37): warning C4267: '+=': conversion from 'size_t' to 'unsigned int', possible loss of data
-  (compiling source file 'Compilers-Team10.cpp')
-  C:\ASU\ASU\SEM 6\Design of compilers\Compilers-project\Compilers-Team10\Compilers-Team10\VariadicTable.h(93,37):
-  the template instantiation context (the oldest one first) is
-  	C:\ASU\ASU\SEM 6\Design of compilers\Compilers-project\Compilers-Team10\Compilers-Team10\Compilers-Team10.cpp(379,15):
-  	see reference to function template instantiation 'void VariadicTable<std::string,std::string>::print<std::ostream>(StreamType &)' being compiled
-          with
-          [
-              StreamType=std::ostream
-          ]
-  		C:\ASU\ASU\SEM 6\Design of compilers\Compilers-project\Compilers-Team10\Compilers-Team10\Compilers-Team10.cpp(379,21):
-  		see the first reference to 'VariadicTable<std::string,std::string>::print' in 'main'
-  
-  Compilers-Team10.vcxproj -> C:\ASU\ASU\SEM 6\Design of compilers\Compilers-project\Compilers-Team10\x64\Debug\Compilers-Team10.exe
+C:\Users\Seif Yasser\Desktop\Compilers-Team10\Compilers-Team10\Lexer.cpp(88,36): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Seif Yasser\Desktop\Compilers-Team10\Compilers-Team10\Compilers-Team10.cpp(47,1): error C2280: 'Lexer::Lexer(const Lexer &)': attempting to reference a deleted function
+C:\Users\Seif Yasser\Desktop\Compilers-Team10\Compilers-Team10\Lexer.h(156): message : compiler has generated 'Lexer::Lexer' here
+C:\Users\Seif Yasser\Desktop\Compilers-Team10\Compilers-Team10\Lexer.h(156,1): message : 'Lexer::Lexer(const Lexer &)': function was implicitly deleted because a data member invokes a deleted or inaccessible function 'std::basic_ifstream<char,std::char_traits<char>>::basic_ifstream(const std::basic_ifstream<char,std::char_traits<char>> &)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\include\fstream(881,5): message : 'std::basic_ifstream<char,std::char_traits<char>>::basic_ifstream(const std::basic_ifstream<char,std::char_traits<char>> &)': function was explicitly deleted

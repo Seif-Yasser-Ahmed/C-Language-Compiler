@@ -129,10 +129,12 @@
   <ItemGroup>
     <ClCompile Include="Compilers-Team10.cpp" />
     <ClCompile Include="Lexer.cpp" />
+    <ClCompile Include="Parser.cpp" />
     <ClCompile Include="VariadicTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="VariadicTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
