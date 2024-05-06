@@ -280,11 +280,11 @@ private:
         if (getCurrentToken().lexeme == "(") {
             consumeToken(); 
             if (!parseTypeSpecifier()) {
-                return false; 
+                return parseFunctionCallExpression();
             }
             if (getCurrentToken().lexeme != ")") {
                 //reportError("Expected ')'");
-                return parseFunctionDeclareExpression();
+                return parseFunctionDeclarationExpression();
             }
             consumeToken(); 
             return parseCastExpression();
@@ -314,11 +314,34 @@ private:
         }
         else {
             //reportError("Invalid unary expression");
-            return parseFunctionDeclareExpression();
+            return parseFunctionDeclarationExpression();
         }
     }
 
-    bool parseFunctionDeclareExpression() {
+    bool parseFunctionCallExpression() {
+        bool flag = false;
+        if (getCurrentToken().lexeme == ")") {
+            flag = true;
+            consumeToken();
+        }
+        else {
+            if (getCurrentToken().type == "ID") {
+                consumeToken();
+                while (getCurrentToken().type == "COMMA") {
+                    consumeToken();
+                    if (getCurrentToken().type == "ID") {
+                        consumeToken();
+                        flag = true;
+                    }
+                }
+                if (getCurrentToken().lexeme != ")") flag = false;
+                else consumeToken();
+            }
+        }
+        return flag;
+    }
+
+    bool parseFunctionDeclarationExpression() { //also used for declaring functions with no parameters 
         bool flag = false;
         if (getCurrentToken().type == "ID") {
             consumeToken();
@@ -349,11 +372,11 @@ int main() {
         {"int", "TYPE_SPECIFIER"},
         {"x", "ID"},
         {"(", "BRACKET"},
-        {"float", "TYPE_SPECIFIER"},
+        //{"float", "TYPE_SPECIFIER"},
         {"y", "ID"},
-        {",", "COMMA"},
+        /*{",", "COMMA"},
         {"int", "TYPE_SPECIFIER"},
-        {"z", "ID"},
+        {"z", "ID"},*/
         {")", "BRACKET"},
         {";", "SEMI"}
         /*{"=", "ASSIGNMENT"},
