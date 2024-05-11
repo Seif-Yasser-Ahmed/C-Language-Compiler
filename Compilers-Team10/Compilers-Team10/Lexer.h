@@ -1,85 +1,56 @@
-//#include <ctype.h> 
-//#include <stdbool.h> 
-//#include <stdio.h> 
-//#include <stdlib.h> 
-//#include <string.h> 
-//#include <string>
-//#include "VariadicTable.h"
-//#define _CRT_SECURE_NO_WARNINGS 1
-//#pragma once
-//class Lexer
-//{
-//
-//
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+#include <vector>
+// #include "VariadicTable.h"
+#include <regex>
+#include <fstream>
+#include <iostream>
+#include "Token.h"
+using namespace std;
 
-//public:
-//	bool isDelimiter(char chr) {
+#pragma once
 
-//	}
-//	bool isOperator(char chr) {
-//		return(
+class Lexer
+{
+private:
+	vector<pair<string, string>> tokenVector;
+	// vector<Token> tokenVector1;
+	int tokensSize = 0;
+	// string myText;
+	string delimiter = " ";
+	// string token;
+	vector<string> linesofcode;
+	smatch match;
+	bool boolOp = false;
+	bool isStringLiteral = false;
+	Token token = Token();
 
-//	}
-//	bool isBooleanOperator(char chr) {
-//		return(
+	ifstream MyReadFile;
+	regex commentRegex;
 
-//	}
-//	bool isValidID(char* str) {
-//		return(
-// 
-//			str[0] != '0' &&
-//			str[0] != '1' &&
-//			str[0] != '2' &&
-//			str[0] != '3' &&
-//			str[0] != '4' &&
-//			str[0] != '5' &&
-//			str[0] != '6' &&
-//			str[0] != '7' &&
-//			str[0] != '8' &&
-//			str[0] != '9' &&
-//			!isDelimiter(str[0]) &&
-//			!isOperator(str[0]) &&
-//			!isBooleanOperator(str[0]) &&
-//			!isKeyword(str)
-//			);
-//	}
-//	bool isKeyword(char* str) {
-//		for (int i = 0; i < sizeof(keywords); i++) {
-//			if (strcmp(keywords[i], str) == 0) {
-//				return true;
-//			}
-//			else {
-//				return false;
-//			}
-//		}
-//	}
-//
-//	bool isInt(char* str) {
-//		if (str == NULL || *str == '\0') {
-//			return false;
-//		}
-//		else {
-//			int i = 0;
-//			while (isdigit(str[i])) {
-//				i++;
-//			}
-//			return str[i] == '\0';
-//		}
-//	}
-//	bool isFloat(char* str) {
-//		if (str == NULL || *str == '\0') {
-//			return false;
-//		}
-//		else {
-//			int i = 0;
-//			int dots = 0;
-//			while (isdigit(str[i]) || str[i] == '.') {
-//				if (str[i] == '.') dots++;
-//				if (dots > 1) return false;
-//				i++;
-//			}
-//			return str[i] == '\0';
-//		}
-//	}
-//};
-//
+	regex keywordsRegex;
+	regex booleanOpRegex;
+	regex IdRegex;
+	regex numbersRegex;
+	regex delimitersRegex;
+	regex arithmeticOpRegex;
+	regex stringLiteralRegex;
+
+public:
+	Lexer();
+
+	~Lexer();
+
+	// Lexer(ifstream MyReadFile, string MyText);
+
+	// void Analyze(ifstream &MyReadFile, string myText);
+
+	void Tokenize();
+
+	vector<Token> getTokens(ifstream &MyReadFile, string myText);
+	vector<Token> tokenVector1;
+};

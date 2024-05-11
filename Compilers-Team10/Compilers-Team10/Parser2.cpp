@@ -11,18 +11,20 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include "Token.h"
+// #include "Token.cpp"
 using namespace std;
-struct Token
-{
-    string lexeme; // the string
-    string type;
-    int num;
-};
+// struct Token
+// {
+//     string lexeme; // the string
+//     string type;
+//     int num;
+// };
 
 class Parser2
 {
 public:
+    // Token token = new Token();
     Parser2(const vector<Token> &tokens) : tokens(tokens), currentTokenIndex(0) {}
 
     bool parseProgram()
@@ -37,6 +39,10 @@ private:
     const vector<Token> &tokens; // vector of token
     size_t currentTokenIndex;    // 3ashan netabe3 el tokens index
     bool ifCond = false;
+    int noOfBlocks = 0;
+    int noOfCalls = 0;
+    string temp;
+    string temp2;
     //--------------------------------------------------------------------------------
 
     bool isDataType(string lexeme)
@@ -45,7 +51,7 @@ private:
         temp2 = getCurrentToken().lexeme;
         // if()
 
-        return (lexeme == "float" || lexeme == "int" || lexeme == "char" || lexeme == "double" || lexeme == "void" || lexeme == "long" || lexeme == "unsigned" || lexeme == "short" || lexeme == "union" || lexeme == "enum" || lexeme == "struct");
+        return (lexeme == "float" || lexeme == "int" || lexeme == "char" || lexeme == "char*" || lexeme == "double" || lexeme == "void" || lexeme == "long" || lexeme == "unsigned" || lexeme == "short" || lexeme == "union" || lexeme == "enum" || lexeme == "struct");
     }
 
     Token getCurrentToken()
@@ -56,6 +62,10 @@ private:
     void consumeToken()
     {
         currentTokenIndex++;
+    }
+    void backToken()
+    {
+        currentTokenIndex--;
     }
 
     bool parseDeclarationList()
@@ -68,12 +78,16 @@ private:
                 // cout << getCurrentToken().lexeme << endl;
                 return false; // there is error
             }
+            if (noOfBlocks != noOfCalls)
+            {
+                cout << "Error in the number of blocks and calls" << endl;
+                return false;
+            }
             // cout << getCurrentToken().lexeme << endl;
         }
         return true; // no errors
     }
-    string temp;
-    string temp2;
+
     bool parseDeclaration()
     {
         cout << getCurrentToken().lexeme << 34 << endl;
@@ -89,8 +103,7 @@ private:
             }
             if (parseVariableDeclaration())
             {
-
-                // cout << getCurrentToken().lexeme << 222222 << endl;
+                // consumeToken();
                 return true;
             }
             else
@@ -102,6 +115,7 @@ private:
         {
             if (!isInSymbolTable(getCurrentToken().lexeme))
             {
+                cout << 1 << endl;
                 cout << "Variable  '" << getCurrentToken().lexeme << "'  hasn't been declared" << endl;
                 return false;
             }
@@ -117,12 +131,13 @@ private:
         {
             if (parseIfWhileStatements())
             {
-                cout << getCurrentToken().lexeme << 1234532343 << endl;
+                // cout << getCurrentToken().lexeme << 1234532343 << endl;
                 consumeToken();
                 return true;
             }
             else
             {
+
                 return false;
             }
         }
@@ -166,9 +181,11 @@ private:
                         if (getCurrentToken().lexeme == ")")
                         {
                             consumeToken();
+                            noOfBlocks++;
+
                             if (parseBlock())
                             {
-                                cout << getCurrentToken().lexeme << 789 << endl;
+                                // cout << getCurrentToken().lexeme << 789 << endl;
                                 return true;
                             }
                             else
@@ -241,7 +258,7 @@ private:
         // cout << "DONE!" << endl;
         if (flag == false)
         {
-            cout << getCurrentToken().lexeme << endl;
+            // cout << getCurrentToken().lexeme << endl;
             // reportError("Error at function declaration");
             return flag;
         }
@@ -253,7 +270,7 @@ private:
     bool parseReturn()
     {
         consumeToken();
-        if (getCurrentToken().type == "CONSTANT")
+        if (getCurrentToken().type == "Decimal Number")
         {
             consumeToken();
             if (getCurrentToken().lexeme == ";")
@@ -277,19 +294,18 @@ private:
             }
         }
     }
+
     bool parseBlock()
     {
         // consumeToken();
+
+        noOfCalls++;
         if (getCurrentToken().lexeme == "{")
         {
-
+            // noOfBlocks++;
             consumeToken();
             while (getCurrentToken().lexeme != "}" && currentTokenIndex < tokens.size())
             {
-                if (getCurrentToken().lexeme == "return")
-                {
-                    return parseReturn();
-                }
 
                 if (!parseExpression() && getCurrentToken().lexeme != "if" && getCurrentToken().lexeme != "while" && getCurrentToken().lexeme != "for")
                 {
@@ -310,17 +326,34 @@ private:
                     if (getCurrentToken().lexeme == ";" && currentTokenIndex < tokens.size() - 1)
                     {
                         consumeToken();
+                        // consumeToken();
                     }
                     else
                     {
                         return false;
                     }
                 }
-
+                if (getCurrentToken().lexeme == "return")
+                {
+                    return parseReturn();
+                }
+                if (getCurrentToken().lexeme == "break" || getCurrentToken().lexeme == "continue")
+                {
+                    consumeToken();
+                    if (getCurrentToken().lexeme == ";")
+                    {
+                        consumeToken();
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
                 // if (currentTokenIndex == tokens.size() && getCurrentToken().lexeme != "}")
                 // {
                 //     return false;
                 // }
+                // consumeToken();
             }
             if (currentTokenIndex < tokens.size() - 1)
             {
@@ -339,8 +372,8 @@ private:
     {
         for (int i = 0; i < SymbolTable.size(); i++)
         {
-            cout << SymbolTable[i].first << endl;
-            cout << SymbolTable[i].second << endl;
+            // cout << SymbolTable[i].first << endl;
+            // cout << SymbolTable[i].second << endl;
             if (SymbolTable[i].first == lexeme1)
             {
                 return true;
@@ -353,10 +386,12 @@ private:
     {
         if (getCurrentToken().type == "Identifier")
         {
+
             if (!isInSymbolTable(getCurrentToken().lexeme))
             {
                 SymbolTable.push_back({getCurrentToken().lexeme, temp});
             }
+
             if (currentTokenIndex != tokens.size() - 1)
             {
                 consumeToken();
@@ -374,52 +409,66 @@ private:
             else if (getCurrentToken().lexeme == "=" || getCurrentToken().lexeme == "+=" || getCurrentToken().lexeme == "-=" || getCurrentToken().lexeme == "*=" || getCurrentToken().lexeme == "/=")
             {
                 consumeToken();
-                if (getCurrentToken().type == "CONSTANT")
+                // cout << getCurrentToken().lexeme << 123 << endl;
+                if (parseSumExpression())
                 {
-                    if (currentTokenIndex != tokens.size() - 1)
-                    {
-                        consumeToken();
-                    }
-                    if (getCurrentToken().lexeme == ";")
-                    {
-                        if (currentTokenIndex < tokens.size())
-                        {
-                            consumeToken();
-                        }
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
                 }
-                else if (getCurrentToken().type == "Identifier")
+                backToken();
+                backToken();
+                if (parseMulExpression())
                 {
-                    consumeToken();
-                    if (getCurrentToken().lexeme == ";")
-                    {
-                        consumeToken();
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
+
+                // if (getCurrentToken().type == "Decimal Number")
+                // {
+                //     if (currentTokenIndex != tokens.size() - 1)
+                //     {
+                //         consumeToken();
+                //     }
+                //     if (getCurrentToken().lexeme == ";")
+                //     {
+                //         if (currentTokenIndex < tokens.size())
+                //         {
+                //             consumeToken();
+                //         }
+                //         return true;
+                //     }
+                //     else
+                //     {
+                //         return false;
+                //     }
+                // }
+                // else if (getCurrentToken().type == "Identifier")
+                // {
+                //     consumeToken();
+                //     if (getCurrentToken().lexeme == ";")
+                //     {
+                //         consumeToken();
+                //         return true;
+                //     }
+                //     else
+                //     {
+                //         return false;
+                //     }
+                // }
+                // else
+                // {
+                //     return false;
+                // }
             }
             else if (getCurrentToken().lexeme == "(")
             {
+
                 consumeToken();
                 return parseFunctionCallExpression();
             }
             else if (getCurrentToken().lexeme == "[")
             {
                 consumeToken();
-                if (getCurrentToken().type == "CONSTANT")
+                if (getCurrentToken().type == "Decimal Number")
                 {
                     if (currentTokenIndex < tokens.size() - 1)
                     {
@@ -469,39 +518,8 @@ private:
             }
             else if (getCurrentToken().lexeme == "{")
             {
-                consumeToken();
-                while (getCurrentToken().lexeme != "}" && currentTokenIndex < tokens.size())
-                {
-                    if (!parseExpression())
-                    {
-                        // cout << getCurrentToken().lexeme << 1 << endl;
-                        return false;
-                    }
-                    else
-                    {
-                        if (getCurrentToken().lexeme == ";" && currentTokenIndex < tokens.size() - 1)
-                        {
-                            consumeToken();
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                if (currentTokenIndex < tokens.size() - 1)
-                {
-                    consumeToken();
-                }
-                if (getCurrentToken().lexeme == ";")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                noOfBlocks++;
+                return parseBlock();
             }
             else
             {
@@ -527,28 +545,41 @@ private:
     }
     bool parseMulExpression()
     {
-        if (parseUnaryExpression())
+
+        if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
         {
-            if (parseMulExpression())
+            // cout << getCurrentToken().lexeme << 8 << endl;
+            consumeToken();
+            if (parseMulOperation())
             {
+                cout << getCurrentToken().lexeme << 1 << endl;
                 consumeToken();
-                if (parseMulOperation())
+                if (parseMulExpression())
                 {
-                    consumeToken();
-                    if (parseUnaryExpression())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else if (parseSumExpression())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
+            else if (getCurrentToken().lexeme == ";")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
+
+        if (getCurrentToken().lexeme == ";")
         {
-            return false;
+            return true;
         }
     }
     bool parseMuttable()
@@ -559,7 +590,7 @@ private:
             if (getCurrentToken().lexeme == "[")
             {
                 consumeToken();
-                if (getCurrentToken().type == "CONSTANT")
+                if (getCurrentToken().type == "Decimal Number")
                 {
                     if (getCurrentToken().lexeme == "]")
                     {
@@ -704,10 +735,11 @@ private:
                 return false;
             }
             consumeToken();
-            cout << getCurrentToken().lexeme << endl;
+            // cout << getCurrentToken().lexeme << endl;
             if (getCurrentToken().lexeme == ")")
             {
                 consumeToken();
+                noOfBlocks++;
                 if (parseBlock())
                 {
                     return true;
@@ -778,15 +810,16 @@ private:
     }
     bool parseExpression()
     {
+        // cout << getCurrentToken().lexeme << 8 << endl;
 
         if (isDataType(getCurrentToken().lexeme))
         {
-            cout << getCurrentToken().lexeme << 9 << endl;
+            // cout << getCurrentToken().lexeme << 9 << endl;
             consumeToken();
             if (isInSymbolTable(getCurrentToken().lexeme))
             {
-                cout << getCurrentToken().lexeme << 2345 << endl;
-                cout << "Variable already declared" << endl;
+                // cout << getCurrentToken().lexeme << 2345 << endl;
+                cout << "Variable " << getCurrentToken().lexeme << " already declared" << endl;
                 return false;
             }
             else
@@ -798,17 +831,18 @@ private:
         {
             if (!isInSymbolTable(getCurrentToken().lexeme))
             {
-                cout << "Variable hasn't been declared" << endl;
+                cout << 2 << endl;
+                cout << "Variable " << getCurrentToken().lexeme << "hasn't been declared" << endl;
                 return false;
             }
             consumeToken();
 
             if (getCurrentToken().lexeme == "=" || getCurrentToken().lexeme == "+=" || getCurrentToken().lexeme == "-=" || getCurrentToken().lexeme == "*=" || getCurrentToken().lexeme == "/=")
             {
-                if (getCurrentToken().lexeme == "+=" || getCurrentToken().lexeme == "-=" || getCurrentToken().lexeme == "*=" || getCurrentToken().lexeme == "/=")
-                {
-                    return false;
-                }
+                // if (getCurrentToken().lexeme == "+=" || getCurrentToken().lexeme == "-=" || getCurrentToken().lexeme == "*=" || getCurrentToken().lexeme == "/=")
+                // {
+                //     return false;
+                // }
                 consumeToken();
                 // cout << getCurrentToken().lexeme << endl;
                 if (parseExpression())
@@ -839,6 +873,18 @@ private:
                 consumeToken();
                 return true;
             }
+            else if (parseSumOperation())
+            {
+
+                consumeToken();
+                return parseExpression();
+            }
+            else if (parseMulOperation())
+            {
+
+                consumeToken();
+                return parseExpression();
+            }
             else if (getCurrentToken().lexeme == ";")
             {
                 // cout << getCurrentToken().lexeme << endl;
@@ -858,7 +904,7 @@ private:
     }
     bool parseConstant()
     {
-        if (getCurrentToken().type == "CONSTANT")
+        if (getCurrentToken().type == "Decimal Number")
         {
             consumeToken();
             return true;
@@ -881,32 +927,68 @@ private:
     bool parseSumExpression()
     {
         // count++;
+
         // //cout << getCurrentToken().lexeme << endl;
-        if (parseMulExpression())
+        if (getCurrentToken().lexeme == ";")
+        {
+            return true;
+        }
+        else if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
+        {
+
+            if (!isInSymbolTable(getCurrentToken().lexeme) && getCurrentToken().type == "Identifier")
+            {
+                cout << 3 << endl;
+                cout << "Variable " << getCurrentToken().lexeme << " hasn't been declared" << endl;
+                return false;
+            }
+            consumeToken();
+
+            if (getCurrentToken().lexeme == "+" || getCurrentToken().lexeme == "-")
+            {
+                // cout << getCurrentToken().lexeme << 1 << endl;
+                // cout << getCurrentToken().lexeme << 1 << endl;
+                // consumeToken();
+                // if (parseMulExpression())
+                // {
+
+                //     return true;
+                // }
+                // else
+                consumeToken();
+                if (parseSumExpression())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (getCurrentToken().lexeme == ";")
+            {
+
+                return true;
+            }
+            else if (getCurrentToken().lexeme == "*" || getCurrentToken().lexeme == "/" || getCurrentToken().lexeme == "%")
+            {
+                // cout << getCurrentToken().lexeme << 432 << endl;
+                consumeToken();
+
+                return parseMulExpression();
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (parseMulExpression())
         {
             return true;
         }
         else
         {
             // cout << getCurrentToken().lexeme << endl;
-            if (getCurrentToken().type == "Identifier")
-            {
-                consumeToken();
-                // cout << getCurrentToken().lexeme << "after id y" << endl;
-
-                if (parseSumOperation())
-                {
-                    consumeToken();
-                    if (parseMulExpression())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
         }
     }
     bool parseUnaryOperation()
@@ -945,14 +1027,15 @@ private:
         {
             if (!isInSymbolTable(getCurrentToken().lexeme))
             {
-                cout << "Variable hasn't been declared " << endl;
+                cout << 4 << endl;
+                cout << "Variable " << getCurrentToken().lexeme << " hasn't been declared " << endl;
                 return false;
             }
             consumeToken();
             if (parseRelOperation())
             {
                 // cout << getCurrentToken().lexeme << endl;
-                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "CONSTANT")
+                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
                 {
                     return true;
                 }
@@ -962,11 +1045,11 @@ private:
                 }
             }
         }
-        else if (getCurrentToken().type == "CONSTANT")
+        else if (getCurrentToken().type == "Decimal Number")
         {
             if (parseRelOperation())
             {
-                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "CONSTANT")
+                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
                 {
                     return true;
                 }
@@ -999,7 +1082,7 @@ private:
     bool parseFunctionCallExpression()
     {
         bool flag = false;
-        cout << getCurrentToken().lexeme << 1 << endl;
+        // cout << getCurrentToken().lexeme << 1 << endl;
 
         if (getCurrentToken().lexeme == ")")
         {
@@ -1008,9 +1091,21 @@ private:
             {
                 consumeToken();
             }
-            if (getCurrentToken().lexeme != ";")
+            if (getCurrentToken().lexeme == "{")
             {
+                noOfBlocks++;
+                return parseBlock();
+            }
+            else if (getCurrentToken().lexeme == ";")
+            {
+                return true;
+            }
+            else
+            {
+                // if(getCurrentToken().lexeme != ";")
+                // {
                 flag = false;
+                // }
             }
             // consumeToken();
         }
@@ -1021,7 +1116,7 @@ private:
             if (getCurrentToken().type == "Identifier")
             {
                 consumeToken();
-                while (getCurrentToken().type == "COMMA")
+                while (getCurrentToken().type == "Delimiter")
                 {
                     consumeToken();
                     if ((isDataType(getCurrentToken().lexeme)))
@@ -1060,480 +1155,608 @@ private:
                 }
             }
         }
-        if (flag == false)
-        {
-            // reportError("Error at function call");
-        }
+        // if (flag == false)
+        // {
+        //     // reportError("Error at function call");
+        // }
         consumeToken();
         return flag;
     }
 };
-int main()
-{
-    // replace with actual tokens from our scanner, this vector is made to store the tokens
-    vector<Token> tokens = {
-        {"int", "TYPE_SPECIFIER"},
-        {"seif", "Identifier"},
-        {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"jou", "Identifier"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
-        // {"while", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"seif", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"if", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"jou", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
+// int main()
+// {
 
-        // {"for", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"lexeme", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"0", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"lexeme", "Identifier"},
-        // {"<=", "ASSIGNMENT"},
-        // {"b", "Identifier"},
-        // {";", "SEMI"},
-        // {"lexeme", "Identifier"},
-        // {"++", "ASSIGNMENT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // {"lexeme", "Identifier"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"type", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // {"}", "BLOCK"},
-        // {"}", "BLOCK"},
-        // {"for", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"lexeme", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"0", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"lexeme", "Identifier"},
-        // {"<=", "ASSIGNMENT"},
-        // {"b", "Identifier"},
-        // {";", "SEMI"},
-        // {"lexeme", "Identifier"},
-        // {"++", "ASSIGNMENT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"lexeme", "Identifier"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"type", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // {"struct", "TYPE_SPECIFIER"},
-        // {"Token", "Identifier"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"lexeme", "Identifier"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"type", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"main", "Identifier"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"q", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"v", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"c", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"b", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"n", "Identifier"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"b", "Identifier"},
-        // {";", "SEMI"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"[", "BRACKET"},
-        // {"10", "CONSTANT"},
-        // {"]", "BRACKET"},
-        // {";", "SEMI"},
-        // {"while", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"seif", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"if", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"jou", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // {"}", "BLOCK"},
-        // {";", "SEMI"},
-        // {"if", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"jou", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"l", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // {";", "SEMI"},
-        // {"=", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"if", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"y", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"seif", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"seif1", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // // {";", "SEMI"},
-        // // Test2// Basic test, assignments (WORKING)
-        // {"int", "TYPE_SPECIFIER"},
-        // {"p", "Identifier"},
-        // {";", "SEMI"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"m", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // //*Test3// function declaration, calls, empty parameters list (WORKING)
-        // {"int", "TYPE_SPECIFIER"},
-        // {"o", "Identifier"},
-        // {"+=", "Unary"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"v", "Identifier"},
-        // // {"(", "BRACKET"},
-        // // {")", "BRACKET"},
-        // // {"{", "BLOCK"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // // {"x", "Identifier"},
-        // // {"=", "ASSIGNMENT"},
-        // // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"while", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"o", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"p", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // //===========================================================
-        // //===========================================================
-        // // {"int", "TYPE_SPECIFIER"},
-        // // {"x", "Identifier"},
-        // // {"(", "BRACKET"},
-        // // {"float", "TYPE_SPECIFIER"},
-        // // {"y", "Identifier"},
-        // // {",", "COMMA"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // // {"z", "Identifier"},
-        // // {")", "BRACKET"},
-        // // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"q", "Identifier"},
-        // {";", "SEMI"},
-        // // {"(", "BRACKET"},
-        // // {"float", "TYPE_SPECIFIER"},
-        // // {"y", "Identifier"},
-        // // {",", "COMMA"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // // {"z", "Identifier"},
-        // // {")", "BRACKET"},
-        // // {";", "SEMI"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"}", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {",", "COMMA"},
-        // {"y", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "Identifier"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "ID"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "ID"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "ID"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // {"}", "BLOCK"},
-        // Test1*// if condition (WORKING!!!!!!!!)
-        // {"int", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // // {"=", "ASSIGNMENT"},
-        // // {"5", "CONSTANT"},
-        // {";", "SEMI"},
-        // // Errorr===================
-        // {"float", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // // {"main", "Identifier"},
-        // // {";", "SEMI"},
-        // {"main", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"}", "BLOCK"},
+// struct Token
+// {
+//     char lexeme;
+//     char type;
+// } int main()
+// {
+//     int jou;
+//     int x;
+//     int seif = 0;
+//     int salah;
+//     while (seif < 5)
+//     {
+//         jou += 20;
+//     }
 
-        // {";", "SEMI"},
-        //=====================================
-        // {"if", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"y", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"seif", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"seif1", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        // // {";", "SEMI"},
-        // // Test2// Basic test, assignments (WORKING)
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {";", "SEMI"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // //*Test3// function declaration, calls, empty parameters list (WORKING)
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"+=", "Unary"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"main", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // // {"{", "BLOCK"},
-        // // {"int", "TYPE_SPECIFIER"},
-        // // {"x", "Identifier"},
-        // // {"=", "ASSIGNMENT"},
-        // // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"while", "BLOCK"},
-        // {"(", "BRACKET"},
-        // {"o", "Identifier"},
-        // {"==", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"p", "Identifier"},
-        // {";", "SEMI"},
-        // {"}", "BLOCK"},
-        //===========================================================
-        //===========================================================
+//     if (jou == 5)
+//     {
+//         for (int parser = 0; parser <= seif; parser++)
+//         {
+//             int x = 5;
+//         }
+//     }
+// }
+// //
+// int main()
+// {
+//     Token token1;
+//     Token token2;
+//     Token token3;
+//     Token token4;
+//     Token token5;
+//     token1.setToken("int", "keyword");
+//     token2.setToken("main", "Identifier");
+//     token3.setToken("=", "Assignment Operator");
+//     token4.setToken("5", "Decimal Number");
+//     token5.setToken(";", "Delimiter");
+//     vector<Token> tokens;
+//     tokens.push_back(token1);
+//     tokens.push_back(token2);
+//     tokens.push_back(token3);
+//     tokens.push_back(token4);
+//     tokens.push_back(token5);
+//     Parser2 parser(tokens);
 
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "Identifier"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
+//     if (parser.parseProgram())
+//     {
+//         cout << "Parsing successful!" << endl;
+//     }
+//     else
+//     {
+//         cout << "Parsing failed!" << endl;
+//     }
+// }
 
-        // {"z", "Identifier"},
-        // {"=", "ASSIGNMENT"},
-        // {"5", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "Identifier"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {"{", "BLOCK"},
-        // {"}", "BLOCK"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {",", "COMMA"},
-        // {"y", "Identifier"},
-        // {"(", "BRACKET"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "Identifier"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "Identifier"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "Identifier"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"x", "ID"},
-        // {"(", "BRACKET"},
-        // {"float", "TYPE_SPECIFIER"},
-        // {"y", "ID"},
-        // {",", "COMMA"},
-        // {"int", "TYPE_SPECIFIER"},
-        // {"z", "ID"},
-        // {")", "BRACKET"},
-        // {";", "SEMI"},
-        // {"=", "ASSIGNMENT"},
-        // {"10", "CONSTANT"},
-        // {";", "SEMI"},
-        // write a hard test case for the parser
+// replace with actual tokens from our scanner, this vector is made to store the tokens
+// vector<Token> tokens = {
+// {"struct", "TYPE_SPECIFIER"},
+// {"Token", "Identifier"},
+// {"{", "BLOCK"},
+// {"char", "TYPE_SPECIFIER"},
+// {"lexeme", "Identifier"},
+// {";", "Delimiter"},
+// {"char", "TYPE_SPECIFIER"},
+// {"type", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// //-------------------
+// {"int", "TYPE_SPECIFIER"},
+// {"main", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"jou", "Identifier"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"seif", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"0", "Decimal Number"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"salah", "Identifier"},
+// {";", "Delimiter"},
+// {"while", "BLOCK"},
+// {"(", "BRACKET"},
+// {"seif", "Identifier"},
+// {"<", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"jou", "Identifier"},
+// {"+=", "Unary"},
+// {"20", "Decimal Number"},
+// {";", "Delimiter"},
 
-    };
-    // int x = 5;
-    // float x = 6;
-    // cout << x << endl;
+// {"}", "BLOCK"},
+// //-------------------
+// {"if", "BLOCK"},
+// {"(", "BRACKET"},
+// {"jou", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"for", "BLOCK"},
+// {"(", "BRACKET"},
+// {"int", "TYPE_SPECIFIER"},
+// {"parser", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"0", "Decimal Number"},
+// {";", "Delimiter"},
+// {"parser", "Identifier"},
+// {"<=", "ASSIGNMENT"},
+// {"seif", "Identifier"},
+// {";", "Delimiter"},
+// {"parser", "Identifier"},
+// {"++", "ASSIGNMENT"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {";", "Delimiter"},
 
-    //
+// {"}", "BLOCK"},
+// {"}", "BLOCK"},
+// {"}", "BLOCK"},
+//-----------------------------------------------------------
+// {"int", "TYPE_SPECIFIER"},
+//     {"y", "Identifier"},
+//     {";", "Delimiter"},
+//     {"int", "TYPE_SPECIFIER"},
+//     {"z", "Identifier"},
+//     {";", "Delimiter"},
+//     {"int", "TYPE_SPECIFIER"},
+//     {"main", "Identifier"},
+//     {"=", "ASSIGNMENT"},
+//     {"y", "Identifier"},
+//     {"+", "ASSIGNMENT"},
+//     {"z", "Identifier"},
+//     {";", "Delimiter"},
 
-    Parser2 parser(tokens);
+// {";", "Delimiter"},
 
-    // parser.SymbolTable
-    if (parser.parseProgram())
-    {
-        cout << "Parsing successful!" << endl;
-    }
-    else
-    {
-        cout << "Parsing failed!" << endl;
-    }
-    // for (int i = 0; i < parser.SymbolTable.size(); i++)
-    // {
-    //     cout << parser.SymbolTable[i].first << " first" << endl;
-    //     cout << parser.SymbolTable[i].second << " second" << endl;
-    // }
-}
+// {";", "Delimiter"},
+// {"while", "BLOCK"},
+// {"(", "BRACKET"},
+// {"seif", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"if", "BLOCK"},
+// {"(", "BRACKET"},
+// {"jou", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+
+// {"for", "BLOCK"},
+// {"(", "BRACKET"},
+// {"int", "TYPE_SPECIFIER"},
+// {"lexeme", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"0", "Decimal Number"},
+// {";", "Delimiter"},
+// {"lexeme", "Identifier"},
+// {"<=", "ASSIGNMENT"},
+// {"b", "Identifier"},
+// {";", "Delimiter"},
+// {"lexeme", "Identifier"},
+// {"++", "ASSIGNMENT"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"lexeme", "Identifier"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"type", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// {"}", "BLOCK"},
+// {"}", "BLOCK"},
+// {"for", "BLOCK"},
+// {"(", "BRACKET"},
+// {"int", "TYPE_SPECIFIER"},
+// {"lexeme", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"0", "Decimal Number"},
+// {";", "Delimiter"},
+// {"lexeme", "Identifier"},
+// {"<=", "ASSIGNMENT"},
+// {"b", "Identifier"},
+// {";", "Delimiter"},
+// {"lexeme", "Identifier"},
+// {"++", "ASSIGNMENT"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"lexeme", "Identifier"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"type", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// {"struct", "TYPE_SPECIFIER"},
+// {"Token", "Identifier"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"lexeme", "Identifier"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"type", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"main", "Identifier"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"q", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"v", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"c", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"b", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"n", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"b", "Identifier"},
+// {";", "Delimiter"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"[", "BRACKET"},
+// {"10", "Decimal Number"},
+// {"]", "BRACKET"},
+// {";", "Delimiter"},
+// {"while", "BLOCK"},
+// {"(", "BRACKET"},
+// {"seif", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"if", "BLOCK"},
+// {"(", "BRACKET"},
+// {"jou", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// {"}", "BLOCK"},
+// {";", "Delimiter"},
+// {"if", "BLOCK"},
+// {"(", "BRACKET"},
+// {"jou", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"l", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// {";", "Delimiter"},
+// {"=", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {";", "Delimiter"},
+// {"if", "BLOCK"},
+// {"(", "BRACKET"},
+// {"y", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"seif", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"seif1", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// // {";", "Delimiter"},
+// {"}", "BLOCK"},
+// // {";", "Delimiter"},
+// // Test2// Basic test, assignments (WORKING)
+// {"int", "TYPE_SPECIFIER"},
+// {"p", "Identifier"},
+// {";", "Delimiter"},
+// {"float", "TYPE_SPECIFIER"},
+// {"m", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// //*Test3// function declaration, calls, empty parameters list (WORKING)
+// {"int", "TYPE_SPECIFIER"},
+// {"o", "Identifier"},
+// {"+=", "Unary"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"v", "Identifier"},
+// // {"(", "BRACKET"},
+// // {")", "BRACKET"},
+// // {"{", "BLOCK"},
+// // {"int", "TYPE_SPECIFIER"},
+// // {"x", "Identifier"},
+// // {"=", "ASSIGNMENT"},
+// // {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"while", "BLOCK"},
+// {"(", "BRACKET"},
+// {"o", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"p", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// //===========================================================
+// //===========================================================
+// // {"int", "TYPE_SPECIFIER"},
+// // {"x", "Identifier"},
+// // {"(", "BRACKET"},
+// // {"float", "TYPE_SPECIFIER"},
+// // {"y", "Identifier"},
+// // {",", "COMMA"},
+// // {"int", "TYPE_SPECIFIER"},
+// // {"z", "Identifier"},
+// // {")", "BRACKET"},
+// // {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"q", "Identifier"},
+// {";", "Delimiter"},
+// // {"(", "BRACKET"},
+// // {"float", "TYPE_SPECIFIER"},
+// // {"y", "Identifier"},
+// // {",", "COMMA"},
+// // {"int", "TYPE_SPECIFIER"},
+// // {"z", "Identifier"},
+// // {")", "BRACKET"},
+// // {";", "Delimiter"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"}", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {",", "COMMA"},
+// {"y", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+// {"}", "BLOCK"},
+// Test1*// if condition (WORKING!!!!!!!!)
+// {"int", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// // {"=", "ASSIGNMENT"},
+// // {"5", "Decimal Number"},
+// {";", "Delimiter"},
+// // Errorr===================
+// {"float", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// // {"main", "Identifier"},
+// // {";", "Delimiter"},
+// {"main", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"}", "BLOCK"},
+
+// {";", "Delimiter"},
+//=====================================
+// {"if", "BLOCK"},
+// {"(", "BRACKET"},
+// {"y", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+// // {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"seif", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"seif1", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// // {";", "Delimiter"},
+// {"}", "BLOCK"},
+// // {";", "Delimiter"},
+// // Test2// Basic test, assignments (WORKING)
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {";", "Delimiter"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// //*Test3// function declaration, calls, empty parameters list (WORKING)
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"+=", "Unary"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"main", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// // {"{", "BLOCK"},
+// // {"int", "TYPE_SPECIFIER"},
+// // {"x", "Identifier"},
+// // {"=", "ASSIGNMENT"},
+// // {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"while", "BLOCK"},
+// {"(", "BRACKET"},
+// {"o", "Identifier"},
+// {"==", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"p", "Identifier"},
+// {";", "Delimiter"},
+// {"}", "BLOCK"},
+//===========================================================
+//===========================================================
+
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+
+// {"z", "Identifier"},
+// {"=", "ASSIGNMENT"},
+// {"5", "Decimal Number"},
+// {";", "Delimiter"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {"{", "BLOCK"},
+// {"}", "BLOCK"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {",", "COMMA"},
+// {"y", "Identifier"},
+// {"(", "BRACKET"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// {"int", "TYPE_SPECIFIER"},
+// {"x", "Identifier"},
+// {"(", "BRACKET"},
+// {"float", "TYPE_SPECIFIER"},
+// {"y", "Identifier"},
+// {",", "COMMA"},
+// {"int", "TYPE_SPECIFIER"},
+// {"z", "Identifier"},
+// {")", "BRACKET"},
+// {";", "Delimiter"},
+// {"=", "ASSIGNMENT"},
+// {"10", "Decimal Number"},
+// {";", "Delimiter"},
+// write a hard test case for the parser
+
+// };
+
+//     Parser2 parser(tokens);
+
+//     if (parser.parseProgram())
+//     {
+//         cout << "Parsing successful!" << endl;
+//     }
+//     else
+//     {
+//         cout << "Parsing failed!" << endl;
+//     }
+// }
