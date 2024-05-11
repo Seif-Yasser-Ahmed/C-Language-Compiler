@@ -1,14 +1,31 @@
 /*Testing Our Compiler*/
-int main ( ) {
-    int a = 1 , b = 2 ; 
-    b++ ;
-    char* ptr ;
-    double b = 10.5 , c = 11.1 ;
-    if ( a > b )
-    return true ;
-    else 
-    return false ;
-    double sum = b + c ;
-    printf( "Hello World %d" , 10 ) ;   
+
+enum seif { aa , bb };
+
+int main ( ){
+
+
+	int a ; int b ;
+
+	if ( a < b ) {
+
+
+		int x = 4 ;
+
+
+	}
+	else if ( a > b ) {
+
+ 		b = 5 ;
+
+	}
+
+	else {
+
+  		a = 5 ;
+
+	}
 
 }
+
+

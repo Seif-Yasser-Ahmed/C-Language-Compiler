@@ -1,8 +1,6 @@
 int main() { 
-int a = 01111 ; //Octac Number Hi
+int a = 01111 ; //Octa;
 int b = 0b1111 ; //Binary
 int c = 0x1111 ; //Hexa
-int = +12 ; /*Positive Number*/
-int = 10e4 ; 
-double = 10.2 ; 
+int x = 12 ; /*Positive Number*/
 }
