@@ -1,0 +1,32 @@
+/*------------------Test Case 1-------------------*/
+struct Token
+    {
+        char lexeme ;
+        char type ;
+    } 
+
+int swap ( int p , char q , float g ) ;
+
+int main (  )
+    {
+	
+        int jou ;
+        int x ;
+	char m = "s" ;
+        int seif = 1 ;
+        int salah ;
+	
+        while ( seif < 5 )
+        {
+            jou = salah + 1 ;
+	    seif ++ ;
+        }
+
+        if ( jou == 5 ) 
+        {
+            for ( int parser = 7 ; parser <= seif ; parser ++ )
+            {
+                x = 5 ;
+            }
+        }
+    }
