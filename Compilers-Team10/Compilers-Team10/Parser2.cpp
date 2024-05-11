@@ -78,21 +78,26 @@ private:
                 // cout << getCurrentToken().lexeme << endl;
                 return false; // there is error
             }
-            if (noOfBlocks != noOfCalls)
-            {
-                cout << "Error in the number of blocks and calls" << endl;
-                return false;
-            }
+            // if (noOfBlocks != noOfCalls)
+            // {
+            //     cout << "Error in the number of blocks and calls" << endl;
+            //     return false;
+            // }
             // cout << getCurrentToken().lexeme << endl;
         }
         return true; // no errors
     }
-
+    bool enumflag = false;
     bool parseDeclaration()
     {
         cout << getCurrentToken().lexeme << 34 << endl;
         if (isDataType(getCurrentToken().lexeme))
         {
+            if (getCurrentToken().lexeme == "enum")
+            {
+
+                return parseEnum();
+            }
             temp = getCurrentToken().lexeme;
             // cout << temp << 44 << endl;
             consumeToken();
@@ -103,11 +108,13 @@ private:
             }
             if (parseVariableDeclaration())
             {
+                // cout << getCurrentToken().lexeme << 45 << endl;
                 // consumeToken();
                 return true;
             }
             else
             {
+                cout << "Declaration is wrong" << endl;
                 return false;
             }
         }
@@ -115,7 +122,7 @@ private:
         {
             if (!isInSymbolTable(getCurrentToken().lexeme))
             {
-                cout << 1 << endl;
+                // cout << 1 << endl;
                 cout << "Variable  '" << getCurrentToken().lexeme << "'  hasn't been declared" << endl;
                 return false;
             }
@@ -137,7 +144,7 @@ private:
             }
             else
             {
-
+                cout << "parseDeclaration is wrong" << endl;
                 return false;
             }
         }
@@ -156,6 +163,7 @@ private:
         // }
         else
         {
+            cout << "parseDeclaration is wrong" << endl;
             return false;
         }
     }
@@ -190,31 +198,42 @@ private:
                             }
                             else
                             {
+                                cout << "parseForExpression is wrong" << endl;
                                 return false;
                             }
                         }
                         else
                         {
+                            cout << "parseForExpression is wrong" << endl;
+
                             return false;
                         }
                     }
                     else
                     {
+                        cout << "parseForExpression is wrong" << endl;
+
                         return false;
                     }
                 }
                 else
                 {
+                    cout << "parseForExpression is wrong" << endl;
+
                     return false;
                 }
             }
             else
             {
+                cout << "parseForExpression is wrong" << endl;
+
                 return false;
             }
         }
         else
         {
+            cout << "parseForExpression is wrong" << endl;
+
             return false;
         }
     }
@@ -233,13 +252,13 @@ private:
         if (getCurrentToken().type == "Identifier")
         {
             consumeToken();
-            while (getCurrentToken().type == "COMMA")
+            while (getCurrentToken().type == "Delimiter")
             {
                 consumeToken();
-                if (getCurrentToken().type == "TYPE_SPECIFIER")
+                if (getCurrentToken().type == "Keyword")
                 {
                     consumeToken();
-                    if (getCurrentToken().type == "Identifier")
+                    if (getCurrentToken().type == "Keyword")
                     {
                         consumeToken();
                         flag = true;
@@ -270,7 +289,7 @@ private:
     bool parseReturn()
     {
         consumeToken();
-        if (getCurrentToken().type == "Decimal Number")
+        if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
         {
             consumeToken();
             if (getCurrentToken().lexeme == ";")
@@ -279,6 +298,7 @@ private:
             }
             else
             {
+                cout << "Error in return statement" << endl;
                 return false;
             }
         }
@@ -295,13 +315,53 @@ private:
         }
     }
 
+    bool parseEnum()
+    {
+        consumeToken();
+        if (getCurrentToken().type == "Identifier")
+        {
+            consumeToken();
+            if (getCurrentToken().lexeme == "{")
+            {
+                consumeToken();
+                if (getCurrentToken().type == "Identifier")
+                {
+                    consumeToken();
+                    while (getCurrentToken().lexeme == ",")
+                    {
+                        consumeToken();
+                        if (getCurrentToken().type == "Identifier")
+                        {
+                            consumeToken();
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (getCurrentToken().lexeme == "}")
+                    {
+                        consumeToken();
+
+                        if (getCurrentToken().lexeme == ";")
+                        {
+                            consumeToken();
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
     bool parseBlock()
     {
         // consumeToken();
-
+        bool isIf = false;
         noOfCalls++;
         if (getCurrentToken().lexeme == "{")
         {
+
             // noOfBlocks++;
             consumeToken();
             while (getCurrentToken().lexeme != "}" && currentTokenIndex < tokens.size())
@@ -309,11 +369,15 @@ private:
 
                 if (!parseExpression() && getCurrentToken().lexeme != "if" && getCurrentToken().lexeme != "while" && getCurrentToken().lexeme != "for")
                 {
+                    cout << "Error in block" << endl;
                     return false;
                 }
                 else if (getCurrentToken().lexeme == "if" || getCurrentToken().lexeme == "while")
                 {
-
+                    if (getCurrentToken().lexeme == "if")
+                    {
+                        isIf = true;
+                    }
                     return parseIfWhileStatements();
                 }
                 else if (getCurrentToken().lexeme == "for")
@@ -321,15 +385,24 @@ private:
 
                     return parseForExpression();
                 }
+                else if (enumflag)
+                {
+                    return parseEnum();
+                }
                 else
                 {
+
+                    // cout << getCurrentToken().lexeme << 4 << endl;
+
                     if (getCurrentToken().lexeme == ";" && currentTokenIndex < tokens.size() - 1)
                     {
+
                         consumeToken();
                         // consumeToken();
                     }
                     else
                     {
+                        cout << "Error in block" << endl;
                         return false;
                     }
                 }
@@ -346,6 +419,7 @@ private:
                     }
                     else
                     {
+                        cout << "Error in block" << endl;
                         return false;
                     }
                 }
@@ -355,15 +429,37 @@ private:
                 // }
                 // consumeToken();
             }
+
             if (currentTokenIndex < tokens.size() - 1)
             {
                 consumeToken();
             }
+            if (getCurrentToken().lexeme == "else")
+            {
+                consumeToken();
+                if (getCurrentToken().lexeme == "{")
+                {
+                    // consumeToken();
+                    return parseBlock();
+                }
+                else if (getCurrentToken().lexeme == "if")
+                {
+                    return parseIfWhileStatements();
+                }
+                else
+                {
+                    cout << "Error in block" << endl;
+                    return false;
+                }
+            }
+            cout << getCurrentToken().lexeme << 12 << endl;
+
             // cout << getCurrentToken().lexeme << 1 << endl;
             return true;
         }
         else
         {
+            cout << "Error in block" << endl;
             return false;
         }
     }
@@ -379,11 +475,13 @@ private:
                 return true;
             }
         }
+        cout << "Error in symbol table" << endl;
         return false;
     }
 
     bool parseVariableDeclaration()
     {
+
         if (getCurrentToken().type == "Identifier")
         {
 
@@ -414,12 +512,13 @@ private:
                 {
                     return true;
                 }
-                backToken();
-                backToken();
-                if (parseMulExpression())
-                {
-                    return true;
-                }
+                // backToken();
+                // backToken();
+                // if (parseMulExpression())
+                // {
+                //     return true;
+                // }
+                cout << "Error in variable declaration" << endl;
                 return false;
 
                 // if (getCurrentToken().type == "Decimal Number")
@@ -463,6 +562,7 @@ private:
             {
 
                 consumeToken();
+                // cout << getCurrentToken().lexeme << 123456 << endl;
                 return parseFunctionCallExpression();
             }
             else if (getCurrentToken().lexeme == "[")
@@ -492,6 +592,7 @@ private:
                         }
                         else
                         {
+                            cout << "Error in variable declaration" << endl;
                             return false;
                         }
                     }
@@ -508,11 +609,15 @@ private:
                     }
                     else
                     {
+                        cout << "Error in variable declaration" << endl;
+
                         return false;
                     }
                 }
                 else
                 {
+                    cout << "Error in variable declaration" << endl;
+
                     return false;
                 }
             }
@@ -523,11 +628,15 @@ private:
             }
             else
             {
+                cout << "Error in variable declaration" << endl;
+
                 return false;
             }
         }
         else
         {
+            cout << "Error in variable declaration" << endl;
+
             return false;
         }
     }
@@ -540,6 +649,7 @@ private:
         }
         else
         {
+            cout << "Error in sum operation" << endl;
             return false;
         }
     }
@@ -564,6 +674,7 @@ private:
                 }
                 else
                 {
+                    cout << "Error in mul expression" << endl;
                     return false;
                 }
             }
@@ -573,6 +684,8 @@ private:
             }
             else
             {
+                cout << "Error in mul expression" << endl;
+
                 return false;
             }
         }
@@ -599,11 +712,14 @@ private:
                     }
                     else
                     {
+                        cout << "Error in muttable" << endl;
                         return false;
                     }
                 }
                 else
                 {
+                    cout << "Error in muttable" << endl;
+
                     return false;
                 }
             }
@@ -614,6 +730,8 @@ private:
         }
         else
         {
+            cout << "Error in muttable" << endl;
+
             return false;
         }
     }
@@ -638,10 +756,13 @@ private:
         }
         else if (parseConstant())
         {
+
+            consumeToken();
             return true;
         }
         else
         {
+            cout << "Error in immutable" << endl;
             return false;
         }
     }
@@ -662,21 +783,28 @@ private:
                     }
                     else
                     {
+                        cout << "Error in call" << endl;
                         return false;
                     }
                 }
                 else
                 {
+                    cout << "Error in call" << endl;
+
                     return false;
                 }
             }
             else
             {
+                cout << "Error in call" << endl;
+
                 return false;
             }
         }
         else
         {
+            cout << "Error in call" << endl;
+
             return false;
         }
     }
@@ -814,7 +942,6 @@ private:
 
         if (isDataType(getCurrentToken().lexeme))
         {
-            // cout << getCurrentToken().lexeme << 9 << endl;
             consumeToken();
             if (isInSymbolTable(getCurrentToken().lexeme))
             {
@@ -829,13 +956,16 @@ private:
         }
         if (getCurrentToken().type == "Identifier")
         {
-            if (!isInSymbolTable(getCurrentToken().lexeme))
+
+            if (!isInSymbolTable(getCurrentToken().lexeme) && getCurrentToken().lexeme != "printf")
             {
                 cout << 2 << endl;
                 cout << "Variable " << getCurrentToken().lexeme << "hasn't been declared" << endl;
                 return false;
             }
+
             consumeToken();
+            // cout << getCurrentToken().lexeme << 5 << endl;
 
             if (getCurrentToken().lexeme == "=" || getCurrentToken().lexeme == "+=" || getCurrentToken().lexeme == "-=" || getCurrentToken().lexeme == "*=" || getCurrentToken().lexeme == "/=")
             {
@@ -852,15 +982,8 @@ private:
                 else if (parseConstant())
                 {
                     // consumeToken();
-                    // if (getCurrentToken().lexeme == ";")
-                    // {
-                    // cout << getCurrentToken().lexeme << 2 << endl;
+
                     return true;
-                    // }
-                    // else
-                    // {
-                    //     return false;
-                    // }
                 }
                 else
                 {
@@ -873,11 +996,21 @@ private:
                 consumeToken();
                 return true;
             }
-            else if (parseSumOperation())
+            else if (getCurrentToken().lexeme == "+" || getCurrentToken().lexeme == "-" || getCurrentToken().lexeme == "*" || getCurrentToken().lexeme == "/" || getCurrentToken().lexeme == "%")
             {
-
                 consumeToken();
-                return parseExpression();
+                cout << getCurrentToken().type << 6 << endl;
+                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
+                {
+                    cout << getCurrentToken().lexeme << 6 << endl;
+                    consumeToken();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+                // return parseExpression();
             }
             else if (parseMulOperation())
             {
@@ -888,7 +1021,13 @@ private:
             else if (getCurrentToken().lexeme == ";")
             {
                 // cout << getCurrentToken().lexeme << endl;
+
                 return true;
+            }
+            else if (getCurrentToken().lexeme == "(")
+            {
+
+                return parseFunctionCallExpression();
             }
             else
             {
@@ -904,7 +1043,7 @@ private:
     }
     bool parseConstant()
     {
-        if (getCurrentToken().type == "Decimal Number")
+        if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
         {
             consumeToken();
             return true;
@@ -914,7 +1053,7 @@ private:
             consumeToken();
             return true;
         }
-        else if (getCurrentToken().type == "STRING_LITERAL")
+        else if (getCurrentToken().type == "String Literal")
         {
             consumeToken();
             return true;
@@ -927,15 +1066,15 @@ private:
     bool parseSumExpression()
     {
         // count++;
+        cout << getCurrentToken().lexeme << 1313 << endl;
 
         // //cout << getCurrentToken().lexeme << endl;
         if (getCurrentToken().lexeme == ";")
         {
             return true;
         }
-        else if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
+        else if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
         {
-
             if (!isInSymbolTable(getCurrentToken().lexeme) && getCurrentToken().type == "Identifier")
             {
                 cout << 3 << endl;
@@ -956,7 +1095,7 @@ private:
                 // }
                 // else
                 consumeToken();
-                if (parseSumExpression())
+                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
                 {
                     return true;
                 }
@@ -964,10 +1103,18 @@ private:
                 {
                     return false;
                 }
+                // if (parseSumExpression())
+                // {
+                //     return true;
+                // }
+                // else
+                // {
+                //     return false;
+                // }
             }
             else if (getCurrentToken().lexeme == ";")
             {
-
+                consumeToken();
                 return true;
             }
             else if (getCurrentToken().lexeme == "*" || getCurrentToken().lexeme == "/" || getCurrentToken().lexeme == "%")
@@ -1027,7 +1174,7 @@ private:
         {
             if (!isInSymbolTable(getCurrentToken().lexeme))
             {
-                cout << 4 << endl;
+                // cout << 4 << endl;
                 cout << "Variable " << getCurrentToken().lexeme << " hasn't been declared " << endl;
                 return false;
             }
@@ -1035,7 +1182,7 @@ private:
             if (parseRelOperation())
             {
                 // cout << getCurrentToken().lexeme << endl;
-                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
+                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
                 {
                     return true;
                 }
@@ -1045,11 +1192,11 @@ private:
                 }
             }
         }
-        else if (getCurrentToken().type == "Decimal Number")
+        else if (getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
         {
             if (parseRelOperation())
             {
-                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number")
+                if (getCurrentToken().type == "Identifier" || getCurrentToken().type == "Decimal Number" || getCurrentToken().type == "Floating Point Number" || getCurrentToken().type == "Octal Number" || getCurrentToken().type == "Hexadecimal Number" || getCurrentToken().type == "Binary Number")
                 {
                     return true;
                 }
@@ -1079,6 +1226,38 @@ private:
         }
     }
 
+    bool parseFunctionCall()
+    {
+        if (getCurrentToken().type == "Identifier")
+        {
+            consumeToken();
+            if (getCurrentToken().lexeme == "(")
+            {
+                consumeToken();
+                if (parseArguments())
+                {
+                    consumeToken();
+                    if (getCurrentToken().lexeme == ")")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
     bool parseFunctionCallExpression()
     {
         bool flag = false;
@@ -1091,6 +1270,7 @@ private:
             {
                 consumeToken();
             }
+
             if (getCurrentToken().lexeme == "{")
             {
                 noOfBlocks++;
@@ -1111,54 +1291,64 @@ private:
         }
         else
         {
-
-            consumeToken();
+            cout << getCurrentToken().lexeme << "seif" << endl;
+            // consumeToken();
             if (getCurrentToken().type == "Identifier")
             {
+                cout << getCurrentToken().lexeme << 1 << endl;
+
+                return parseFunctionCall();
+            }
+            else if (isDataType(getCurrentToken().lexeme))
+            {
                 consumeToken();
-                while (getCurrentToken().type == "Delimiter")
+                if (getCurrentToken().type == "Identifier")
                 {
                     consumeToken();
-                    if ((isDataType(getCurrentToken().lexeme)))
+                    while (getCurrentToken().lexeme == ",")
                     {
                         consumeToken();
-                        if (getCurrentToken().type == "Identifier")
+                        if (isDataType(getCurrentToken().lexeme))
+                        {
+                            consumeToken();
+                            if (getCurrentToken().type == "Identifier")
+                            {
+                                consumeToken();
+                                flag = true;
+                            }
+                        }
+                        else if (getCurrentToken().type == "Identifier")
                         {
                             consumeToken();
                             flag = true;
                         }
+                        else
+                        {
+                            flag = false;
+                        }
                     }
-                }
-                // cout << getCurrentToken().lexeme << 1 << endl;
-                if (getCurrentToken().lexeme != ")")
-                {
-                    flag = false;
-                }
-                else
-                {
-                    if (currentTokenIndex < tokens.size() - 1)
+                    if (getCurrentToken().lexeme == ")")
                     {
-                        // return true;
+                        flag = true;
                         consumeToken();
-                        if (getCurrentToken().lexeme != ";")
+                        if (getCurrentToken().lexeme == ";")
+                        {
+                            flag = true;
+                        }
+                        else
                         {
                             flag = false;
                         }
                     }
                     else
                     {
-                        if (getCurrentToken().lexeme != ";")
-                        {
-                            flag = false;
-                        }
+                        flag = false;
                     }
+                    // flag = true;
                 }
             }
         }
-        // if (flag == false)
-        // {
-        //     // reportError("Error at function call");
-        // }
+        cout << getCurrentToken().lexeme << 3 << endl;
         consumeToken();
         return flag;
     }
