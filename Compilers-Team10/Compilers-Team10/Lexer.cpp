@@ -116,7 +116,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
         /*----------------Keywords---------------------------*/
         if (regex_search(linesofcode[i], match, keywordsRegex))
         {
-            cout << "<< Keyword ," << match.str(0) << " >>" << endl;
+            // cout << "<< Keyword ," << match.str(0) << " >>" << endl;
             Token token1 = Token();
             token1.setToken(match.str(0), "Keyword");
             tokenVector1.push_back(token1);
@@ -135,7 +135,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     {
                         if (!regex_search(temp, match, commentRegex))
                         {
-                            cout << "<< Identifier ," << temp << " >>" << endl;
+                            // cout << "<< Identifier ," << temp << " >>" << endl;
                             Token token1 = Token();
                             token1.setToken(temp, "Identifier");
                             tokenVector1.push_back(token1);
@@ -154,8 +154,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             string temp = match.str(0);
             if (!regex_search(linesofcode[i], numbersRegex))
             {
-                cout << "<< Delimiter ," << match.str(0) << "  >>" << endl;
-                cout << match.str(0).size() << endl;
+                // cout << "<< Delimiter ," << match.str(0) << "  >>" << endl;
+                // cout << match.str(0).size() << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Delimiter");
                 tokenVector1.push_back(token1);
@@ -168,7 +168,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
         // start = linesofcode[i].cbegin();
         if (regex_search(linesofcode[i], match, stringLiteralRegex))
         {
-            cout << "<< String Literal , " << match.str(0) << "  >>" << endl;
+            // cout << "<< String Literal , " << match.str(0) << "  >>" << endl;
             Token token1 = Token();
             token1.setToken(match.str(0), "String Literal");
             tokenVector1.push_back(token1);
@@ -185,7 +185,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 if (match.str(0) == ">=")
                 {
                     string s = "More than or Equal Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -196,9 +196,9 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "<=")
                 {
                     string s = "Less than or Equal Operator";
-                    cout << "<< Less than or Equal Operator ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< Less than or Equal Operator ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -209,9 +209,9 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "==")
                 {
                     string s = "Equality Operator";
-                    cout << "<< Equality Operator ," << match.str(0) << " >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< Equality Operator ," << match.str(0) << " >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -222,8 +222,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "!=")
                 {
                     string s = "Not Equal Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -234,8 +234,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "<")
                 {
                     string s = "Less than Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -244,8 +244,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == ">")
                 {
                     string s = "More Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -254,8 +254,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "&&")
                 {
                     string s = "Logical AND Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -264,8 +264,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "||")
                 {
                     string s = "Logical OR Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -274,8 +274,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "!")
                 {
                     string s = "Logical NOT Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -284,8 +284,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "&")
                 {
                     string s = "Bitwise AND Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -294,8 +294,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "|")
                 {
                     string s = "Bitwise OR Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -304,8 +304,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "^")
                 {
                     string s = "Bitwise XOR Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -314,8 +314,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "~")
                 {
                     string s = "Bitwise NOT Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -324,8 +324,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == ">>")
                 {
                     string s = "Shift Right Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -334,8 +334,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "<<")
                 {
                     string s = "Shift Left Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -344,8 +344,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "?")
                 {
                     string s = "Ternary Conditional Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -354,8 +354,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == ".")
                 {
                     string s = "Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -364,8 +364,8 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 else if (match.str(0) == "->")
                 {
                     string s = "Operator";
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
-                    cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
+                    // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                     Token token1 = Token();
                     token1.setToken(match.str(0), s);
                     tokenVector1.push_back(token1);
@@ -385,7 +385,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                 {
                     if (match.str(0) == "=")
                     {
-                        cout << "<< Assignment Operator ," << match.str(0) << " >>" << endl;
+                        // cout << "<< Assignment Operator ," << match.str(0) << " >>" << endl;
                         // cout << "<< " << s << " ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "Assignment Operator");
@@ -394,7 +394,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "+")
                     {
-                        cout << "<< Addition Operator ," << match.str(0) << "  >>" << endl;
+                        // cout << "<< Addition Operator ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "addition Operator");
                         tokenVector1.push_back(token1);
@@ -402,7 +402,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "-")
                     {
-                        cout << "<< Subtraction Operator ," << match.str(0) << "  >>" << endl;
+                        // cout << "<< Subtraction Operator ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "subtraction Operator");
                         tokenVector1.push_back(token1);
@@ -410,7 +410,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "*")
                     {
-                        cout << "<< Multiplicative Operator ," << match.str(0) << "  >>" << endl;
+                        // cout << "<< Multiplicative Operator ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "multiplicative Operator");
                         tokenVector1.push_back(token1);
@@ -418,7 +418,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "/")
                     {
-                        cout << "<< Division Operator ," << match.str(0) << "  >>" << endl;
+                        // cout << "<< Division Operator ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "division Operator");
                         tokenVector1.push_back(token1);
@@ -426,7 +426,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "%")
                     {
-                        cout << "<< Remainder Operator ," << match.str(0) << " >>" << endl;
+                        // cout << "<< Remainder Operator ," << match.str(0) << " >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "remainder Operator");
                         tokenVector1.push_back(token1);
@@ -434,7 +434,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "++")
                     {
-                        cout << "<< Addition Unary Operator ," << match.str(0) << "  >>" << endl;
+                        // cout << "<< Addition Unary Operator ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "Addition Unary Operator");
                         tokenVector1.push_back(token1);
@@ -442,7 +442,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
                     }
                     else if (match.str(0) == "--")
                     {
-                        cout << "<< Subtraction Unary Operator ," << match.str(0) << "  >>" << endl;
+                        // cout << "<< Subtraction Unary Operator ," << match.str(0) << "  >>" << endl;
                         Token token1 = Token();
                         token1.setToken(match.str(0), "subtraction Unary Operator");
                         tokenVector1.push_back(token1);
@@ -458,7 +458,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             string temp = match.str(0);
             if (temp.find("0x") != string::npos)
             {
-                cout << "<< Hexadecimal Number ," << temp << "  >>" << endl;
+                // cout << "<< Hexadecimal Number ," << temp << "  >>" << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Hexadecimal Number");
                 tokenVector1.push_back(token1);
@@ -466,7 +466,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             }
             else if (temp.find("0b") != string::npos)
             {
-                cout << "<< Binary Number ," << temp << "  >>" << endl;
+                // cout << "<< Binary Number ," << temp << "  >>" << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Binary Number");
                 tokenVector1.push_back(token1);
@@ -474,7 +474,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             }
             else if (temp.find("e") != string::npos)
             {
-                cout << "<< Scientific Notation Number ," << temp << "  >>" << endl;
+                // cout << "<< Scientific Notation Number ," << temp << "  >>" << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Scientific Notation Number");
                 tokenVector1.push_back(token1);
@@ -482,7 +482,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             }
             else if (temp.find(".") != string::npos)
             {
-                cout << "<< Floating Point Number ," << temp << " >>" << endl;
+                // cout << "<< Floating Point Number ," << temp << " >>" << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Floating Point Number");
                 tokenVector1.push_back(token1);
@@ -490,7 +490,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             }
             else if (temp[0] == '0' && temp.length() > 1)
             {
-                cout << "<< Octal Number ," << temp << "  >>" << endl;
+                // cout << "<< Octal Number ," << temp << "  >>" << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Octal Number");
                 tokenVector1.push_back(token1);
@@ -498,7 +498,7 @@ vector<Token> Lexer::getTokens(std::ifstream &MyReadFile, string myText)
             }
             else
             {
-                cout << "<< Decimal Number ," << temp << "  >>" << endl;
+                // cout << "<< Decimal Number ," << temp << "  >>" << endl;
                 Token token1 = Token();
                 token1.setToken(match.str(0), "Decimal Number");
                 tokenVector1.push_back(token1);

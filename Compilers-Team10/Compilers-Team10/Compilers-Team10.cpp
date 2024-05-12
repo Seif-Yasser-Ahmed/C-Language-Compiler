@@ -15,9 +15,10 @@
 using namespace std;
 
 /*Fix 10e4 Exponential number e4 (identifier) */
-#define Test4
+// #define Test1
 // #define Test2
 // #define Test3
+#define Test4
 
 int main()
 {
@@ -38,24 +39,21 @@ int main()
 #endif
 
 #ifdef Test4
-    ifstream MyReadFile("C:\\Users\\Seif Yasser\\Desktop\\Test-Case-1.txt");
+    ifstream MyReadFile("C:\\Users\\Seif Yasser\\Desktop\\C-Compiler-Team10\\Test_4.txt");
 #endif
 
     Lexer lexer = Lexer();
     tokenVector2 = lexer.getTokens(MyReadFile, myText);
-    cout << tokenVector2[0].lexeme << endl;
-    cout << tokenVector2[0].type << endl;
 
     for (const auto &x : tokenVector2)
     {
         tokenTable.addRow(x.lexeme, x.type);
     }
     tokenTable.print(cout);
+    cout << "Number of Tokens is: " << tokenVector2.size() << endl;
 
     cout << "==================================================================================================" << endl;
     cout << "==================================================================================================" << endl;
-    cout << tokenVector2[0].lexeme << endl;
-    cout << tokenVector2[0].type << endl;
     Parser2 parser(tokenVector2);
     if (parser.parseProgram())
     {
@@ -65,4 +63,10 @@ int main()
     {
         cout << "Parsing failed!" << endl;
     }
+    cout << "Number of Unique Identifiers is: " << parser.SymbolTable.size() << endl;
+    for (auto x : parser.SymbolTable)
+    {
+        cout << x.first << " " << x.second << endl;
+    }
+    // parser.SymbolTable
 }
